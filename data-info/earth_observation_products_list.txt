@@ -1,5 +1,6 @@
-Earth Observation Source Products (18 Systems):
+Earth Observation Source Products Actually in DRCS Data:
 
+PRIMARY PRODUCTS (16 Systems):
 1. ARIA (Advanced Rapid Imaging and Analysis)
 2. Sentinel-1
 3. Sentinel-2
@@ -12,9 +13,18 @@ Earth Observation Source Products (18 Systems):
 10. Planet Labs Satellites
 11. Maxar (WorldView/GeoEye)
 12. HLS (Harmonized Landsat Sentinel-2)
-13. EMIT (Earth Surface Mineral Dust Source Investigation)
-14. GPM/IMERG (Global Precipitation Measurement/Integrated Multi-satellite Retrievals)
-15. GOES (Geostationary Operational Environmental Satellite)
-16. SMAP (Soil Moisture Active Passive)
-17. ICESat/ICESat-2
-18. GEDI (Global Ecosystem Dynamics Investigation)
+13. GPM/IMERG (Global Precipitation Measurement/Integrated Multi-satellite Retrievals)
+14. GOES (Geostationary Operational Environmental Satellite)
+15. SMAP (Soil Moisture Active Passive)
+16. Burn Index Products (dNBR/NBR)
+
+ADDITIONAL PRODUCTS:
+17. UAVSAR (Uninhabited Aerial Vehicle Synthetic Aperture Radar)
+18. RADARSAT-2
+19. ALOS-2 (PALSAR-2)
+20. OMPS (Ozone Mapping and Profiler Suite)
+21. Black Marble HD
+22. DFO (Dartmouth Flood Observatory)
+23. Satellogic
+24. MISR (Multi-angle Imaging SpectroRadiometer)
+25. TROPICS

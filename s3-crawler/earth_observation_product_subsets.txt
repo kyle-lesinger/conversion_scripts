@@ -1,0 +1,95 @@
+Earth Observation Product Subsets and Variants
+
+OPTICAL/MULTISPECTRAL PRODUCTS:
+- True Color
+- Natural Color
+- Color Infrared (CIR)
+- False Color
+- RGB Composite
+
+SPECTRAL BAND PRODUCTS:
+- SWIR (Short-Wave Infrared)
+- Thermal Infrared (TIR)
+- Panchromatic
+- VNIR (Visible/Near-Infrared)
+
+VEGETATION INDICES:
+- NDVI (Normalized Difference Vegetation Index)
+- EVI (Enhanced Vegetation Index)
+
+WATER INDICES:
+- MNDWI (Modified Normalized Difference Water Index)
+- NDWI (Normalized Difference Water Index)
+
+FIRE/BURN PRODUCTS:
+- NBR (Normalized Burn Ratio)
+- dNBR (Differenced Normalized Burn Ratio)
+- Burn Severity Index
+- Fire Detection
+- Thermal Anomalies
+
+SAR (SYNTHETIC APERTURE RADAR) PRODUCTS:
+- Amplitude
+- Coherence
+- Backscatter (Sigma0)
+- Damage Proxy Map (DPM)
+- Flood Proxy Map (FPM)
+- Displacement Maps
+- InSAR (Interferometric SAR)
+
+WATER/FLOOD PRODUCTS:
+- Water Extent
+- Flood Extent
+- Water Body Mapping
+- Open Water Mask
+
+ATMOSPHERIC PRODUCTS:
+- SO2 (Sulfur Dioxide)
+- Aerosol Optical Depth
+- UV Aerosol Index (UVAI)
+- Ash Index
+- Cloud Mask
+
+NIGHT/POWER PRODUCTS:
+- Day/Night Band (DNB)
+- Black Marble/Night Lights
+- Black Marble HD (BMHD)
+- Power Outage Detection
+
+TEMPERATURE PRODUCTS:
+- Land Surface Temperature (LST)
+- Sea Surface Temperature (SST)
+- Brightness Temperature
+- Evapotranspiration
+- Water Stress Index
+
+ELEVATION/TOPOGRAPHY:
+- Digital Elevation Model (DEM)
+- Slope
+- Aspect
+
+PRECIPITATION:
+- Precipitation Rate
+- Precipitation Accumulation
+
+SOIL MOISTURE:
+- Soil Moisture
+- Freeze/Thaw State
+
+PROCESSING LEVELS:
+- Surface Reflectance
+- Top of Atmosphere (TOA)
+- Atmospherically Corrected
+
+COMPOSITE PRODUCTS:
+- Temporal Composite
+- Mosaic
+- Harmonized Product
+
+CHANGE DETECTION:
+- Change Detection
+- Time Series Analysis
+- Anomaly Detection
+
+---
+Total: 59 unique product subsets/variants identified in NASA Disasters DRCS data

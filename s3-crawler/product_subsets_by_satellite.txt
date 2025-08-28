@@ -1,0 +1,194 @@
+EARTH OBSERVATION PRODUCTS AND THEIR SUBSETS
+=============================================
+
+1. SENTINEL-1 (C-BAND SAR)
+---------------------------
+- Water Extent
+- Flood Proxy Map (FPM)
+- RGB Composites
+- Coherence
+- Amplitude
+- Backscatter (VV/VH polarization)
+- Interferometric products
+
+2. SENTINEL-2 (MULTISPECTRAL OPTICAL)
+--------------------------------------
+- True Color
+- Natural Color
+- Color Infrared (CIR)
+- SWIR (Short-Wave Infrared)
+- NDVI (Normalized Difference Vegetation Index)
+- MNDWI (Modified Normalized Difference Water Index)
+- Flood Proxy Map (FPM)
+- Water Extent
+
+3. LANDSAT SERIES (7/8/9)
+--------------------------
+- True Color
+- Natural Color
+- Color Infrared (CIR)
+- Panchromatic
+- Thermal Infrared (TIR)
+- NDVI (Normalized Difference Vegetation Index)
+- MNDWI (Modified Normalized Difference Water Index)
+- dNBR (Differenced Normalized Burn Ratio)
+
+4. MODIS (TERRA/AQUA)
+---------------------
+- Thermal Anomalies/Fire Detection
+- Land Surface Temperature
+- True Color Imagery
+- Vegetation Indices
+- Active Fire Products
+
+5. VIIRS (SUOMI NPP/NOAA-20/NOAA-21)
+-------------------------------------
+- Black Marble HD (BMHD)
+- Day/Night Band (DNB)
+- Thermal Infrared
+- True Color
+- Ash Index
+- SO2 (Sulfur Dioxide)
+- Aerosol
+- Flood Products
+- Fire Detection
+- Night Lights
+
+6. PLANET LABS
+--------------
+- True Color
+- Color Infrared (CIR)
+- Water Extent
+- Surface Reflectance
+
+7. MAXAR (WORLDVIEW/GEOEYE)
+----------------------------
+- Very High Resolution True Color
+- Multispectral Analysis
+- Panchromatic
+- Change Detection Products
+
+8. ARIA (INSAR ANALYSIS)
+-------------------------
+- Damage Proxy Map (DPM)
+- Flood Proxy Map (FPM)
+- Coherence Maps
+- Displacement Maps
+- Ground Deformation
+- Interferograms
+
+9. ASTER
+--------
+- VNIR (15m resolution)
+- SWIR (30m resolution)
+- TIR (90m Thermal Infrared)
+- Digital Elevation Models
+
+10. MASTER (AIRBORNE)
+----------------------
+- 50-band Hyperspectral
+- Thermal Infrared
+- Fire Characterization
+- Calibration/Validation Data
+
+11. ECOSTRESS (ISS)
+--------------------
+- Land Surface Temperature (70m)
+- Evapotranspiration
+- Water Stress Indices
+- Thermal Anomalies
+
+12. HLS (HARMONIZED LANDSAT SENTINEL-2)
+----------------------------------------
+- 30m Harmonized Surface Reflectance
+- Combined temporal coverage
+- Vegetation Indices
+- Water Products (DSWX)
+
+13. SMAP
+--------
+- Soil Moisture (40km)
+- Freeze/Thaw State
+- Surface Soil Moisture (~5cm depth)
+
+14. GPM/IMERG
+-------------
+- Precipitation Rate
+- Precipitation Accumulation
+- 30-minute Updates
+- Rainfall Estimates
+
+15. GOES (GEOSTATIONARY)
+-------------------------
+- Weather Monitoring
+- Fire Detection
+- Lightning Mapping
+- 5-15 minute Imaging
+- Thermal Infrared
+
+16. BURN INDEX PRODUCTS (DERIVED)
+----------------------------------
+- NBR (Normalized Burn Ratio)
+- dNBR (Differenced NBR)
+- Burn Severity Classification
+
+17. UAVSAR (NASA JPL AIRBORNE L-BAND SAR)
+------------------------------------------
+- Pauli RGB Composites
+- Polarimetric Data (HH, HV, VV)
+- Displacement Maps (InSAR)
+- RGB Stacks
+- High-resolution Interferometry
+- Ground Deformation Monitoring
+- Landslide Detection
+
+18. OTHER SPECIALIZED PRODUCTS
+-------------------------------
+
+RADARSAT-2:
+- C-band SAR imagery
+- Water extent mapping
+- Flood detection
+
+ALOS-2 (PALSAR-2):
+- L-band SAR
+- InSAR products
+- Amplitude imagery
+- Displacement maps
+
+OMPS:
+- SO2 (Sulfur Dioxide) measurements
+- UV Aerosol Index (UVAI)
+- Aerosol products
+- Volcanic monitoring
+
+BLACK MARBLE HD:
+- High-resolution night lights
+- Power outage detection
+- Urban monitoring
+
+DFO (DARTMOUTH FLOOD OBSERVATORY):
+- Flood extent products
+- Multi-sensor composites
+- Maximum flood extent
+
+SATELLOGIC:
+- High-cadence optical imaging
+- Cloud masks
+- Surface reflectance
+
+MISR:
+- Multi-angle imaging
+- Stereo height products
+- Cloud detection
+
+TROPICS:
+- Microwave soundings
+- Precipitation
+- Temperature profiles
+
+Note: The following systems are NOT present in the DRCS data:
+- EMIT (Earth Surface Mineral Dust Source Investigation)
+- ICESat/ICESat-2
+- GEDI (Global Ecosystem Dynamics Investigation)
+- PeruSat
