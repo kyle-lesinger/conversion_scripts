@@ -1,0 +1,2845 @@
+{
+  "drcs_activations": {
+    "202501_Fire_CA": {
+      "aria": {
+        "asf": {
+          "_files": [
+            "Eaton.tif",
+            "Palisades.tif"
+          ]
+        },
+        "dist": {
+          "dist_hls": {
+            "_files": [
+              "OPERA-DIST-ALERT-HLS-VEG-ANOM-MAX_20250112.tif",
+              "OPERA-DIST-ALERT-HLS-VEG-ANOM-MAX_20250114.tif",
+              "OPERA-DIST-ALERT-HLS-VEG-DIST-STATUS_20250112.tif",
+              "OPERA-DIST-ALERT-HLS-VEG-DIST-STATUS_20250114.tif"
+            ]
+          },
+          "dist_s1_prototype": {
+            "_files": [
+              "disturbance_track64_2025-01-09_share.tif",
+              "disturbance_track71_2025-01-09_share.tif"
+            ]
+          }
+        }
+      },
+      "aviris-3": {
+        "_files": [
+          "AV320250110t222449_000_L1B_RDN_7c39fdb3_RDN_ORT_QL.tif",
+          "AV320250110t223109_000_L1B_RDN_7c39fdb3_RDN_ORT_QL.tif"
+        ],
+        "charash": {
+          "_files": [
+            "eaton_1_20250111_av3_charash_fraction.tif",
+            "eaton_1_20250111_av3_charash_fraction_color.tif",
+            "palisades_2_20250111_av3_charash_fraction.tif",
+            "palisades_2_20250111_av3_charash_fraction_color.tif"
+          ]
+        },
+        "dnbr": {
+          "_files": [
+            "COG_Eaton_AV3_provisional_dNBR_866nm_2198nm_20240905-20250116.tif",
+            "COG_Eaton_AV3_provisional_dNBR_866nm_2198nm_20240905-20250116_color.tif",
+            "COG_Palisades_AV3_provisional_dNBR_866nm_2198nm_20240905-20250116.tif",
+            "COG_Palisades_AV3_provisional_dNBR_866nm_2198nm_20240905-20250116_color.tif"
+          ]
+        },
+        "earlylook": {
+          "_files": [
+            "2025-01-11T19_46_16Z-to-2025-01-11T19_52_10Z.tif",
+            "2025-01-11T19_59_28Z-to-2025-01-11T20_27_32Z.tif",
+            "2025-01-11T20_42_30Z-to-2025-01-11T20_48_53Z.tif",
+            "2025-01-11T20_56_19Z-to-2025-01-11T21_19_29Z.tif",
+            "2025-01-16T18_53_55Z-to-2025-01-16T18_53_55Z.tif",
+            "2025-01-16T19_00_58Z-to-2025-01-16T19_00_58Z.tif",
+            "2025-01-16T19_04_42Z-to-2025-01-16T19_04_42Z.tif",
+            "2025-01-16T19_09_28Z-to-2025-01-16T19_09_28Z.tif",
+            "2025-01-16T19_15_22Z-to-2025-01-16T19_38_40Z.tif",
+            "2025-01-16T19_47_10Z-to-2025-01-16T19_47_10Z.tif",
+            "2025-01-16T19_52_46Z-to-2025-01-16T20_31_28Z.tif"
+          ]
+        },
+        "pca": {
+          "_files": [
+            "eaton_pca_20250111.tif",
+            "palisades_pca_20250111.tif"
+          ]
+        }
+      },
+      "burn_severity": {
+        "_files": [
+          "SoCal_Fires_2025_Structure_Damage.tif",
+          "SoCal_Fires_2025_Urban_Burn_Severity.tif",
+          "SoCal_Fires_2025_Vegetation_Burn_Severity.tif"
+        ]
+      },
+      "ecostress": {
+        "_files": [
+          "ECO_L2_LSTE.002_LST_doy2025008040112_aid0001.tif",
+          "ECO_L2_LSTE.002_LST_doy2025008040112_aid0001_1.tif",
+          "ECO_L2_LSTE.002_LST_doy2025011030946_aid0001.tif",
+          "ECO_L2_LSTE.002_LST_doy2025011030946_aid0001_1.tif"
+        ]
+      },
+      "landsat": {
+        "_files": [
+          "LC08_colorInfrared_20250106_182824_041036.tif",
+          "LC08_naturalColor_20250106_182824_041036.tif",
+          "LC08_trueColor_20250106_182824_041036.tif",
+          "LC09_NBR_20250114_182831_041036.tif",
+          "LC09_colorInfrared_20250114_182831_041036.tif",
+          "LC09_naturalColor_20250114_182831_041036.tif",
+          "LC09_trueColor_20250114_182831_041036.tif"
+        ]
+      },
+      "maxar_chng": {
+        "_files": [
+          "Altadena_Post_1050010040277300-visual.tif",
+          "Altadena_Pre_10400100A17E8600-visual.tif",
+          "Altadena_change_detection_sta_maxar.tif"
+        ]
+      },
+      "planet": {
+        "_files": [
+          "composite_Jan12.tif",
+          "composite_Jan13.tif",
+          "composite_Jan14.tif",
+          "composite_Jan15.tif",
+          "composite_Jan21.tif",
+          "composite_Jan6.tif",
+          "composite_Jan9.tif"
+        ]
+      },
+      "projects": {
+        "Planet_PR": {
+          "Planet_PR.Overviews": {
+            "Jan12.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000018_C00000004.tif",
+                "Ov_i02_L01_R00000018_C00000005.tif",
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R00000008_C00000001.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan13_new.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan14.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan15.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan21.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan6.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            },
+            "Jan9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000018_C00000004.tif",
+                "Ov_i02_L01_R00000018_C00000005.tif",
+                "Ov_i02_L01_R0000002E_C00000009.tif",
+                "Ov_i02_L02_R00000008_C00000001.tif",
+                "Ov_i02_L02_R0000000F_C00000003.tif"
+              ]
+            }
+          }
+        }
+      },
+      "s1_2_fire_severity": {
+        "_files": [
+          "Combined_classification_Unburnt_to_Extreme.tif"
+        ]
+      },
+      "s1_changedetection_asf": {
+        "_files": [
+          "Eaton 10m.tif",
+          "Palisades 10m.tif"
+        ]
+      },
+      "s1_dmgassessment": {
+        "Jan16_Delivery": {
+          "_files": [
+            "LA_damage_20250109_v0.tif",
+            "LA_damage_20250113_v0.tif",
+            "LA_damage_20250121_v0.tif"
+          ]
+        },
+        "_files": [
+          "LA_damage_20250113_v0.tif",
+          "la_damage_20250109_v0.tif"
+        ]
+      },
+      "s2_dnbr": {
+        "_files": [
+          "NBR_01_12_2024.tif",
+          "NBR_12_18_2024.tif",
+          "dNBR.tif"
+        ]
+      },
+      "sentinel2": {
+        "_files": [
+          "S2A_NBR_20250112_merged.tif",
+          "S2A_colorInfrared_20250112_merged.tif",
+          "S2A_shortwaveInfrared_20250112_merged.tif",
+          "S2A_trueColor_20250112_merged.tif",
+          "S2B_colorInfrared_20241218_merged.tif",
+          "S2B_shortwaveInfrared_20241218_merged.tif",
+          "S2B_trueColor_20241218_merged.tif"
+        ]
+      }
+    },
+    "202502_Flood_OhioValley": {
+      "landsat": {
+        "_files": [
+          "LC09_colorInfrared_20250203_merged.tif",
+          "LC09_colorInfrared_20250217_merged.tif",
+          "LC09_colorInfrared_20250219_merged.tif",
+          "LC09_naturalColor_20250203_merged.tif",
+          "LC09_naturalColor_20250219_merged.tif",
+          "LC09_trueColor_20250203_merged.tif",
+          "LC09_trueColor_20250217_merged.tif",
+          "LC09_trueColor_20250219_merged.tif"
+        ]
+      },
+      "projects": {
+        "landslides_RV": {
+          "landslide_proxyheatmap": {
+            "_files": [
+              "S1_20250217.tif"
+            ]
+          }
+        }
+      },
+      "sentinel2": {
+        "_files": [
+          "S2B_colorInfrared_20250210_merged.tif",
+          "S2B_colorInfrared_20250220_merged.tif",
+          "S2B_colorInfrared_20250223_merged.tif",
+          "S2B_naturalColor_20250210_merged.tif",
+          "S2B_naturalColor_20250220_merged.tif",
+          "S2B_naturalColor_20250223_merged.tif",
+          "S2B_trueColor_20250210_merged.tif",
+          "S2B_trueColor_20250220_merged.tif",
+          "S2B_trueColor_20250223_merged.tif",
+          "S2C_colorInfrared_20250225_merged.tif",
+          "S2C_naturalColor_20250225_merged.tif",
+          "S2C_trueColor_20250225_merged.tif"
+        ]
+      }
+    },
+    "202503_SevereWx_US": {
+      "planet": {
+        "_files": [
+          "LIX_Planet_trueColor_20250301_7899853_merged.tif",
+          "LIX_Planet_trueColor_20250311_7923427_merged.tif",
+          "LIX_Planet_trueColor_20250311_7923683_merged.tif",
+          "LIX_Planet_trueColor_20250311_7923805_merged.tif",
+          "LIX_Planet_trueColor_20250316_7935289_merged.tif",
+          "LIX_Planet_trueColor_20250316_7935296_merged.tif",
+          "LIX_Planet_trueColor_20250318_7940625_merged.tif",
+          "LIX_Planet_trueColor_20250318_7940629_merged.tif",
+          "LIX_Planet_trueColor_20250318_7941250_merged.tif",
+          "LSX_Planet_trueColor_20250313_7928028_merged.tif",
+          "LSX_Planet_trueColor_20250313_7928436_merged.tif",
+          "LSX_Planet_trueColor_20250313_7928467_merged.tif",
+          "LSX_Planet_trueColor_20250313_7928576_merged.tif",
+          "LSX_Planet_trueColor_20250317_7937837_merged.tif",
+          "LSX_Planet_trueColor_20250317_7937847_merged.tif",
+          "LSX_Planet_trueColor_20250317_7937970_merged.tif",
+          "LSX_Planet_trueColor_20250317_7938212_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923341_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923555_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923610_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923637_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923690_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923875_merged.tif",
+          "LZK_Planet_trueColor_20250311_7923925_merged.tif",
+          "LZK_Planet_trueColor_20250312_7925821_merged.tif",
+          "LZK_Planet_trueColor_20250317_7937837_merged.tif",
+          "LZK_Planet_trueColor_20250317_7937847_merged.tif",
+          "LZK_Planet_trueColor_20250317_7937893_merged.tif",
+          "LZK_Planet_trueColor_20250317_7937957_merged.tif",
+          "LZK_Planet_trueColor_20250317_7937970_merged.tif",
+          "LZK_Planet_trueColor_20250317_7938212_merged.tif",
+          "LZK_Planet_trueColor_20250317_7938226_merged.tif",
+          "LZK_Planet_trueColor_20250318_7940308_merged.tif",
+          "MEG_Planet_trueColor_20250311_7923362_merged.tif",
+          "MEG_Planet_trueColor_20250311_7923543_merged.tif",
+          "MEG_Planet_trueColor_20250311_7923610_merged.tif",
+          "MEG_Planet_trueColor_20250311_7923690_merged.tif",
+          "MEG_Planet_trueColor_20250311_7923925_merged.tif",
+          "MEG_Planet_trueColor_20250322_7949909_merged.tif",
+          "MEG_Planet_trueColor_20250322_7950032_merged.tif",
+          "MEG_Planet_trueColor_20250322_7950158_merged.tif",
+          "MEG_Planet_trueColor_20250322_7950272_merged.tif",
+          "MEG_Planet_trueColor_20250322_7950287_merged.tif",
+          "MEG_Planet_trueColor_20250324_7954650_merged.tif",
+          "MOB_Planet_trueColor_20250312_7925772_merged.tif",
+          "MOB_Planet_trueColor_20250312_7925796_merged.tif",
+          "MOB_Planet_trueColor_20250316_7935357_merged.tif",
+          "MOB_Planet_trueColor_20250316_7935506_merged.tif",
+          "MOB_Planet_trueColor_20250316_7936028_merged.tif",
+          "SGF_Planet_trueColor_20250311_7923341_merged.tif",
+          "SGF_Planet_trueColor_20250311_7923555_merged.tif",
+          "SGF_Planet_trueColor_20250311_7923610_merged.tif",
+          "SGF_Planet_trueColor_20250311_7923637_merged.tif",
+          "SGF_Planet_trueColor_20250311_7923875_merged.tif",
+          "SGF_Planet_trueColor_20250311_7923927_merged.tif",
+          "SGF_Planet_trueColor_20250317_7937831_merged.tif",
+          "SGF_Planet_trueColor_20250317_7937835_merged.tif",
+          "SGF_Planet_trueColor_20250317_7937837_merged.tif",
+          "SGF_Planet_trueColor_20250317_7937847_merged.tif",
+          "SGF_Planet_trueColor_20250317_7937957_merged.tif",
+          "SGF_Planet_trueColor_20250317_7937970_merged.tif",
+          "SGF_Planet_trueColor_20250317_7938015_merged.tif",
+          "SGF_Planet_trueColor_20250317_7938212_merged.tif",
+          "SGF_Planet_trueColor_20250317_7938226_merged.tif",
+          "SHV_Planet_trueColor_20250310_7921536_merged.tif",
+          "SHV_Planet_trueColor_20250313_7928091_merged.tif",
+          "SHV_Planet_trueColor_20250316_7935748_merged.tif",
+          "SHV_Planet_trueColor_20250317_7938226_merged.tif"
+        ]
+      },
+      "projects": {
+        "planet_SGF": {
+          "planet_SGF.Overviews": {
+            "Mar11.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002EE_C000000D5.tif",
+                "Ov_i02_L01_R000002EE_C000000D6.tif",
+                "Ov_i02_L01_R000002EF_C000000D5.tif",
+                "Ov_i02_L01_R000002EF_C000000D6.tif",
+                "Ov_i02_L01_R000002EF_C000000D7.tif",
+                "Ov_i02_L01_R000002F0_C000000D2.tif",
+                "Ov_i02_L01_R000002F0_C000000D3.tif",
+                "Ov_i02_L01_R000002F0_C000000D5.tif",
+                "Ov_i02_L01_R000002F0_C000000D6.tif",
+                "Ov_i02_L01_R000002F0_C000000D7.tif",
+                "Ov_i02_L01_R000002F1_C000000D2.tif",
+                "Ov_i02_L01_R000002F1_C000000D3.tif",
+                "Ov_i02_L01_R000002F1_C000000D4.tif",
+                "Ov_i02_L01_R000002F1_C000000D5.tif",
+                "Ov_i02_L01_R000002F1_C000000D6.tif",
+                "Ov_i02_L01_R000002F1_C000000D7.tif",
+                "Ov_i02_L01_R000002F2_C000000D2.tif",
+                "Ov_i02_L01_R000002F2_C000000D3.tif",
+                "Ov_i02_L01_R000002F2_C000000D4.tif",
+                "Ov_i02_L01_R000002F2_C000000D5.tif",
+                "Ov_i02_L01_R000002F3_C000000D3.tif",
+                "Ov_i02_L01_R000002F3_C000000D4.tif",
+                "Ov_i02_L01_R000002F3_C000000D5.tif",
+                "Ov_i02_L01_R000002F3_C000000D6.tif",
+                "Ov_i02_L01_R000002F4_C000000D4.tif",
+                "Ov_i02_L01_R000002F4_C000000D5.tif",
+                "Ov_i02_L02_R000000FA_C00000046.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FB_C00000046.tif",
+                "Ov_i02_L02_R000000FB_C00000047.tif",
+                "Ov_i02_L02_R000000FC_C00000046.tif",
+                "Ov_i02_L02_R000000FC_C00000047.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000054_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001C_C00000007.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif",
+                "Ov_i02_L06_R00000003_C00000000.tif"
+              ]
+            },
+            "Mar17.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002EE_C000000D4.tif",
+                "Ov_i02_L01_R000002EE_C000000D5.tif",
+                "Ov_i02_L01_R000002EF_C000000D4.tif",
+                "Ov_i02_L01_R000002EF_C000000D5.tif",
+                "Ov_i02_L01_R000002EF_C000000D6.tif",
+                "Ov_i02_L01_R000002EF_C000000D7.tif",
+                "Ov_i02_L01_R000002F0_C000000D2.tif",
+                "Ov_i02_L01_R000002F0_C000000D3.tif",
+                "Ov_i02_L01_R000002F0_C000000D4.tif",
+                "Ov_i02_L01_R000002F0_C000000D5.tif",
+                "Ov_i02_L01_R000002F0_C000000D6.tif",
+                "Ov_i02_L01_R000002F0_C000000D7.tif",
+                "Ov_i02_L01_R000002F1_C000000D2.tif",
+                "Ov_i02_L01_R000002F1_C000000D3.tif",
+                "Ov_i02_L01_R000002F1_C000000D4.tif",
+                "Ov_i02_L01_R000002F1_C000000D5.tif",
+                "Ov_i02_L01_R000002F1_C000000D6.tif",
+                "Ov_i02_L01_R000002F1_C000000D7.tif",
+                "Ov_i02_L01_R000002F2_C000000D2.tif",
+                "Ov_i02_L01_R000002F2_C000000D3.tif",
+                "Ov_i02_L01_R000002F2_C000000D4.tif",
+                "Ov_i02_L01_R000002F2_C000000D5.tif",
+                "Ov_i02_L01_R000002F3_C000000D3.tif",
+                "Ov_i02_L01_R000002F3_C000000D4.tif",
+                "Ov_i02_L01_R000002F3_C000000D5.tif",
+                "Ov_i02_L01_R000002F4_C000000D4.tif",
+                "Ov_i02_L01_R000002F4_C000000D5.tif",
+                "Ov_i02_L02_R000000FA_C00000046.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FB_C00000046.tif",
+                "Ov_i02_L02_R000000FB_C00000047.tif",
+                "Ov_i02_L02_R000000FC_C00000046.tif",
+                "Ov_i02_L02_R000000FC_C00000047.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000054_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001C_C00000007.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif",
+                "Ov_i02_L06_R00000003_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "planet_lix": {
+          "planet_lix.Overviews": {
+            "Mar1.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002DA_C000000D9.tif",
+                "Ov_i02_L01_R000002DA_C000000DA.tif",
+                "Ov_i02_L01_R000002DB_C000000D9.tif",
+                "Ov_i02_L01_R000002DB_C000000DA.tif",
+                "Ov_i02_L02_R000000F3_C00000048.tif",
+                "Ov_i02_L03_R00000051_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif"
+              ]
+            },
+            "Mar11.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002DE_C000000D7.tif",
+                "Ov_i02_L01_R000002DE_C000000D8.tif",
+                "Ov_i02_L01_R000002DE_C000000D9.tif",
+                "Ov_i02_L01_R000002DF_C000000D7.tif",
+                "Ov_i02_L01_R000002DF_C000000D8.tif",
+                "Ov_i02_L01_R000002DF_C000000D9.tif",
+                "Ov_i02_L01_R000002DF_C000000DA.tif",
+                "Ov_i02_L01_R000002E0_C000000D8.tif",
+                "Ov_i02_L01_R000002E0_C000000D9.tif",
+                "Ov_i02_L01_R000002E0_C000000DA.tif",
+                "Ov_i02_L02_R000000F4_C00000047.tif",
+                "Ov_i02_L02_R000000F4_C00000048.tif",
+                "Ov_i02_L02_R000000F5_C00000047.tif",
+                "Ov_i02_L02_R000000F5_C00000048.tif",
+                "Ov_i02_L03_R00000051_C00000017.tif",
+                "Ov_i02_L03_R00000051_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar16.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002DA_C000000D9.tif",
+                "Ov_i02_L01_R000002DA_C000000DA.tif",
+                "Ov_i02_L01_R000002DB_C000000D9.tif",
+                "Ov_i02_L01_R000002DB_C000000DA.tif",
+                "Ov_i02_L02_R000000F3_C00000048.tif",
+                "Ov_i02_L03_R00000051_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif"
+              ]
+            },
+            "Mar18.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002DE_C000000D8.tif",
+                "Ov_i02_L01_R000002DE_C000000D9.tif",
+                "Ov_i02_L01_R000002DE_C000000DA.tif",
+                "Ov_i02_L01_R000002DF_C000000D8.tif",
+                "Ov_i02_L01_R000002DF_C000000D9.tif",
+                "Ov_i02_L01_R000002DF_C000000DA.tif",
+                "Ov_i02_L01_R000002E0_C000000D8.tif",
+                "Ov_i02_L01_R000002E0_C000000D9.tif",
+                "Ov_i02_L01_R000002E0_C000000DA.tif",
+                "Ov_i02_L02_R000000F4_C00000048.tif",
+                "Ov_i02_L02_R000000F5_C00000048.tif",
+                "Ov_i02_L03_R00000051_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            }
+          }
+        },
+        "planet_lsx": {
+          "planet_lsx.Overviews": {
+            "Mar13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F2_C000000D4.tif",
+                "Ov_i02_L01_R000002F2_C000000D5.tif",
+                "Ov_i02_L01_R000002F2_C000000D6.tif",
+                "Ov_i02_L01_R000002F2_C000000D7.tif",
+                "Ov_i02_L01_R000002F2_C000000D8.tif",
+                "Ov_i02_L01_R000002F3_C000000D4.tif",
+                "Ov_i02_L01_R000002F3_C000000D5.tif",
+                "Ov_i02_L01_R000002F3_C000000D6.tif",
+                "Ov_i02_L01_R000002F3_C000000D7.tif",
+                "Ov_i02_L01_R000002F3_C000000D8.tif",
+                "Ov_i02_L01_R000002F4_C000000D4.tif",
+                "Ov_i02_L01_R000002F4_C000000D5.tif",
+                "Ov_i02_L01_R000002F4_C000000D6.tif",
+                "Ov_i02_L01_R000002F4_C000000D7.tif",
+                "Ov_i02_L01_R000002F4_C000000D8.tif",
+                "Ov_i02_L02_R000000FB_C00000046.tif",
+                "Ov_i02_L02_R000000FB_C00000047.tif",
+                "Ov_i02_L02_R000000FB_C00000048.tif",
+                "Ov_i02_L02_R000000FC_C00000046.tif",
+                "Ov_i02_L02_R000000FC_C00000047.tif",
+                "Ov_i02_L02_R000000FC_C00000048.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000018.tif",
+                "Ov_i02_L03_R00000054_C00000017.tif",
+                "Ov_i02_L03_R00000054_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L04_R0000001C_C00000007.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar17.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F1_C000000D4.tif",
+                "Ov_i02_L01_R000002F1_C000000D5.tif",
+                "Ov_i02_L01_R000002F1_C000000D6.tif",
+                "Ov_i02_L01_R000002F2_C000000D4.tif",
+                "Ov_i02_L01_R000002F2_C000000D5.tif",
+                "Ov_i02_L01_R000002F2_C000000D6.tif",
+                "Ov_i02_L01_R000002F2_C000000D7.tif",
+                "Ov_i02_L01_R000002F3_C000000D4.tif",
+                "Ov_i02_L01_R000002F3_C000000D5.tif",
+                "Ov_i02_L01_R000002F3_C000000D6.tif",
+                "Ov_i02_L01_R000002F3_C000000D7.tif",
+                "Ov_i02_L01_R000002F4_C000000D4.tif",
+                "Ov_i02_L01_R000002F4_C000000D5.tif",
+                "Ov_i02_L01_R000002F4_C000000D6.tif",
+                "Ov_i02_L01_R000002F4_C000000D7.tif",
+                "Ov_i02_L02_R000000FB_C00000046.tif",
+                "Ov_i02_L02_R000000FB_C00000047.tif",
+                "Ov_i02_L02_R000000FC_C00000046.tif",
+                "Ov_i02_L02_R000000FC_C00000047.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000054_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001C_C00000007.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            }
+          }
+        },
+        "planet_lzk": {
+          "planet_lzk.Overviews": {
+            "Mar11.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002E7_C000000D1.tif",
+                "Ov_i02_L01_R000002E7_C000000D2.tif",
+                "Ov_i02_L01_R000002E7_C000000D3.tif",
+                "Ov_i02_L01_R000002E8_C000000D1.tif",
+                "Ov_i02_L01_R000002E8_C000000D2.tif",
+                "Ov_i02_L01_R000002E8_C000000D3.tif",
+                "Ov_i02_L01_R000002E9_C000000D1.tif",
+                "Ov_i02_L01_R000002E9_C000000D2.tif",
+                "Ov_i02_L01_R000002E9_C000000D3.tif",
+                "Ov_i02_L01_R000002EC_C000000D3.tif",
+                "Ov_i02_L01_R000002EC_C000000D4.tif",
+                "Ov_i02_L01_R000002EC_C000000D5.tif",
+                "Ov_i02_L01_R000002EC_C000000D6.tif",
+                "Ov_i02_L01_R000002ED_C000000D3.tif",
+                "Ov_i02_L01_R000002ED_C000000D4.tif",
+                "Ov_i02_L01_R000002ED_C000000D5.tif",
+                "Ov_i02_L01_R000002ED_C000000D6.tif",
+                "Ov_i02_L01_R000002ED_C000000D7.tif",
+                "Ov_i02_L01_R000002ED_C000000D8.tif",
+                "Ov_i02_L01_R000002EE_C000000D3.tif",
+                "Ov_i02_L01_R000002EE_C000000D4.tif",
+                "Ov_i02_L01_R000002EE_C000000D5.tif",
+                "Ov_i02_L01_R000002EE_C000000D6.tif",
+                "Ov_i02_L01_R000002EE_C000000D7.tif",
+                "Ov_i02_L01_R000002EE_C000000D8.tif",
+                "Ov_i02_L01_R000002EF_C000000D5.tif",
+                "Ov_i02_L01_R000002EF_C000000D6.tif",
+                "Ov_i02_L01_R000002EF_C000000D7.tif",
+                "Ov_i02_L01_R000002EF_C000000D8.tif",
+                "Ov_i02_L02_R000000F7_C00000045.tif",
+                "Ov_i02_L02_R000000F7_C00000046.tif",
+                "Ov_i02_L02_R000000F8_C00000045.tif",
+                "Ov_i02_L02_R000000F8_C00000046.tif",
+                "Ov_i02_L02_R000000F9_C00000046.tif",
+                "Ov_i02_L02_R000000F9_C00000047.tif",
+                "Ov_i02_L02_R000000F9_C00000048.tif",
+                "Ov_i02_L02_R000000FA_C00000046.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000048.tif",
+                "Ov_i02_L03_R00000052_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif",
+                "Ov_i02_L06_R00000003_C00000000.tif"
+              ]
+            },
+            "Mar12.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002ED_C000000D4.tif",
+                "Ov_i02_L01_R000002ED_C000000D5.tif",
+                "Ov_i02_L01_R000002EE_C000000D4.tif",
+                "Ov_i02_L01_R000002EE_C000000D5.tif",
+                "Ov_i02_L02_R000000F9_C00000046.tif",
+                "Ov_i02_L02_R000000F9_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000046.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif"
+              ]
+            },
+            "Mar17.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002E7_C000000D1.tif",
+                "Ov_i02_L01_R000002E7_C000000D2.tif",
+                "Ov_i02_L01_R000002E7_C000000D3.tif",
+                "Ov_i02_L01_R000002E8_C000000D1.tif",
+                "Ov_i02_L01_R000002E8_C000000D2.tif",
+                "Ov_i02_L01_R000002E8_C000000D3.tif",
+                "Ov_i02_L01_R000002EC_C000000D4.tif",
+                "Ov_i02_L01_R000002EC_C000000D5.tif",
+                "Ov_i02_L01_R000002EC_C000000D6.tif",
+                "Ov_i02_L01_R000002ED_C000000D4.tif",
+                "Ov_i02_L01_R000002ED_C000000D5.tif",
+                "Ov_i02_L01_R000002ED_C000000D6.tif",
+                "Ov_i02_L01_R000002ED_C000000D7.tif",
+                "Ov_i02_L01_R000002EE_C000000D4.tif",
+                "Ov_i02_L01_R000002EE_C000000D5.tif",
+                "Ov_i02_L01_R000002EE_C000000D6.tif",
+                "Ov_i02_L01_R000002EE_C000000D7.tif",
+                "Ov_i02_L01_R000002EF_C000000D6.tif",
+                "Ov_i02_L01_R000002EF_C000000D7.tif",
+                "Ov_i02_L02_R000000F7_C00000045.tif",
+                "Ov_i02_L02_R000000F7_C00000046.tif",
+                "Ov_i02_L02_R000000F8_C00000045.tif",
+                "Ov_i02_L02_R000000F8_C00000046.tif",
+                "Ov_i02_L02_R000000F9_C00000046.tif",
+                "Ov_i02_L02_R000000F9_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000046.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L03_R00000052_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif",
+                "Ov_i02_L06_R00000003_C00000000.tif"
+              ]
+            },
+            "Mar18.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002EE_C000000D7.tif",
+                "Ov_i02_L01_R000002EE_C000000D8.tif",
+                "Ov_i02_L01_R000002EF_C000000D7.tif",
+                "Ov_i02_L01_R000002EF_C000000D8.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000048.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif"
+              ]
+            }
+          }
+        },
+        "planet_meg": {
+          "planet_meg.Overviews": {
+            "Mar11.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002EB_C000000D5.tif",
+                "Ov_i02_L01_R000002EB_C000000D6.tif",
+                "Ov_i02_L01_R000002EB_C000000D7.tif",
+                "Ov_i02_L01_R000002EC_C000000D5.tif",
+                "Ov_i02_L01_R000002EC_C000000D6.tif",
+                "Ov_i02_L01_R000002EC_C000000D7.tif",
+                "Ov_i02_L01_R000002EC_C000000D8.tif",
+                "Ov_i02_L01_R000002ED_C000000D5.tif",
+                "Ov_i02_L01_R000002ED_C000000D6.tif",
+                "Ov_i02_L01_R000002ED_C000000D7.tif",
+                "Ov_i02_L01_R000002ED_C000000D8.tif",
+                "Ov_i02_L01_R000002ED_C000000D9.tif",
+                "Ov_i02_L01_R000002EE_C000000D6.tif",
+                "Ov_i02_L01_R000002EE_C000000D7.tif",
+                "Ov_i02_L01_R000002EE_C000000D8.tif",
+                "Ov_i02_L01_R000002EE_C000000D9.tif",
+                "Ov_i02_L02_R000000F9_C00000047.tif",
+                "Ov_i02_L02_R000000F9_C00000048.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000048.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002EB_C000000D5.tif",
+                "Ov_i02_L01_R000002EB_C000000D6.tif",
+                "Ov_i02_L01_R000002EC_C000000D5.tif",
+                "Ov_i02_L01_R000002EC_C000000D6.tif",
+                "Ov_i02_L01_R000002EC_C000000D7.tif",
+                "Ov_i02_L01_R000002EC_C000000D8.tif",
+                "Ov_i02_L01_R000002ED_C000000D5.tif",
+                "Ov_i02_L01_R000002ED_C000000D6.tif",
+                "Ov_i02_L01_R000002ED_C000000D7.tif",
+                "Ov_i02_L01_R000002ED_C000000D8.tif",
+                "Ov_i02_L01_R000002ED_C000000D9.tif",
+                "Ov_i02_L01_R000002EE_C000000D6.tif",
+                "Ov_i02_L01_R000002EE_C000000D7.tif",
+                "Ov_i02_L01_R000002EE_C000000D8.tif",
+                "Ov_i02_L01_R000002EE_C000000D9.tif",
+                "Ov_i02_L02_R000000F9_C00000047.tif",
+                "Ov_i02_L02_R000000F9_C00000048.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000048.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar24.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002EC_C000000D7.tif",
+                "Ov_i02_L01_R000002EC_C000000D8.tif",
+                "Ov_i02_L01_R000002ED_C000000D7.tif",
+                "Ov_i02_L01_R000002ED_C000000D8.tif",
+                "Ov_i02_L01_R000002EE_C000000D7.tif",
+                "Ov_i02_L01_R000002EE_C000000D8.tif",
+                "Ov_i02_L02_R000000F9_C00000047.tif",
+                "Ov_i02_L02_R000000F9_C00000048.tif",
+                "Ov_i02_L02_R000000FA_C00000047.tif",
+                "Ov_i02_L02_R000000FA_C00000048.tif",
+                "Ov_i02_L03_R00000053_C00000017.tif",
+                "Ov_i02_L03_R00000053_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif"
+              ]
+            }
+          }
+        },
+        "planet_mob": {
+          "planet_mob.Overviews": {
+            "Mar12.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002DE_C000000DD.tif",
+                "Ov_i02_L01_R000002DE_C000000DE.tif",
+                "Ov_i02_L01_R000002DF_C000000DD.tif",
+                "Ov_i02_L01_R000002DF_C000000DE.tif",
+                "Ov_i02_L01_R000002DF_C000000DF.tif",
+                "Ov_i02_L01_R000002E0_C000000DD.tif",
+                "Ov_i02_L01_R000002E0_C000000DE.tif",
+                "Ov_i02_L01_R000002E0_C000000DF.tif",
+                "Ov_i02_L02_R000000F4_C00000049.tif",
+                "Ov_i02_L02_R000000F4_C0000004A.tif",
+                "Ov_i02_L02_R000000F5_C00000049.tif",
+                "Ov_i02_L02_R000000F5_C0000004A.tif",
+                "Ov_i02_L03_R00000051_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar16.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002DE_C000000DD.tif",
+                "Ov_i02_L01_R000002DE_C000000DE.tif",
+                "Ov_i02_L01_R000002DF_C000000DD.tif",
+                "Ov_i02_L01_R000002DF_C000000DE.tif",
+                "Ov_i02_L01_R000002DF_C000000DF.tif",
+                "Ov_i02_L01_R000002E0_C000000DD.tif",
+                "Ov_i02_L01_R000002E0_C000000DE.tif",
+                "Ov_i02_L01_R000002E0_C000000DF.tif",
+                "Ov_i02_L02_R000000F4_C00000049.tif",
+                "Ov_i02_L02_R000000F4_C0000004A.tif",
+                "Ov_i02_L02_R000000F5_C00000049.tif",
+                "Ov_i02_L02_R000000F5_C0000004A.tif",
+                "Ov_i02_L03_R00000051_C00000018.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            }
+          }
+        },
+        "planet_shv": {
+          "planet_shv.Overviews": {
+            "Mar10.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002E5_C000000D0.tif",
+                "Ov_i02_L01_R000002E5_C000000D1.tif",
+                "Ov_i02_L01_R000002E6_C000000D0.tif",
+                "Ov_i02_L01_R000002E6_C000000D1.tif",
+                "Ov_i02_L01_R000002E7_C000000D0.tif",
+                "Ov_i02_L01_R000002E7_C000000D1.tif",
+                "Ov_i02_L02_R000000F7_C00000045.tif",
+                "Ov_i02_L03_R00000052_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif"
+              ]
+            },
+            "Mar13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002E6_C000000D1.tif",
+                "Ov_i02_L01_R000002E6_C000000D2.tif",
+                "Ov_i02_L01_R000002E7_C000000D1.tif",
+                "Ov_i02_L01_R000002E7_C000000D2.tif",
+                "Ov_i02_L02_R000000F7_C00000045.tif",
+                "Ov_i02_L02_R000000F7_C00000046.tif",
+                "Ov_i02_L03_R00000052_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif"
+              ]
+            },
+            "Mar16.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002E5_C000000D0.tif",
+                "Ov_i02_L01_R000002E5_C000000D1.tif",
+                "Ov_i02_L01_R000002E6_C000000D0.tif",
+                "Ov_i02_L01_R000002E6_C000000D1.tif",
+                "Ov_i02_L01_R000002E7_C000000D0.tif",
+                "Ov_i02_L01_R000002E7_C000000D1.tif",
+                "Ov_i02_L02_R000000F7_C00000045.tif",
+                "Ov_i02_L03_R00000052_C00000017.tif",
+                "Ov_i02_L04_R0000001B_C00000007.tif"
+              ]
+            },
+            "Mar17.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000001B_C00000007.tif"
+              ]
+            }
+          }
+        }
+      },
+      "sentinel-2": {
+        "_files": [
+          "BMX_S2B_NDVI_20250217_merged.tif",
+          "BMX_S2B_NDVI_20250312_merged.tif",
+          "BMX_S2B_NDVI_20250319_merged.tif",
+          "BMX_S2B_trueColor_20250217_merged.tif",
+          "BMX_S2B_trueColor_20250312_merged.tif",
+          "BMX_S2B_trueColor_20250319_merged.tif",
+          "BMX_S2C_NDVI_20250317_merged.tif",
+          "BMX_S2C_trueColor_20250317_merged.tif",
+          "HUN_S2B_NDVI_20250312_merged.tif",
+          "HUN_S2B_trueColor_20250312_merged.tif",
+          "HUN_S2C_NDVI_20250317_merged.tif",
+          "HUN_S2C_trueColor_20250317_merged.tif",
+          "JAN_S2B_NDVI_20250312_merged.tif",
+          "JAN_S2B_trueColor_20250312_merged.tif",
+          "JAN_S2C_NDVI_20250310_merged.tif",
+          "JAN_S2C_NDVI_20250317_merged.tif",
+          "JAN_S2C_trueColor_20250310_merged.tif",
+          "JAN_S2C_trueColor_20250317_merged.tif",
+          "LZK_S2A_NDVI_20250318_merged.tif",
+          "LZK_S2A_trueColor_20250318_merged.tif",
+          "LZK_S2C_NDVI_20250310_merged.tif",
+          "LZK_S2C_NDVI_20250313_merged.tif",
+          "LZK_S2C_trueColor_20250310_merged.tif",
+          "LZK_S2C_trueColor_20250313_merged.tif",
+          "MEG_S2B_NDVI_20250312_merged.tif",
+          "MEG_S2B_trueColor_20250312_merged.tif",
+          "MEG_S2C_NDVI_20250317_merged.tif",
+          "MEG_S2C_trueColor_20250317_merged.tif",
+          "MOB_S2B_NDVI_20250217_merged.tif",
+          "MOB_S2B_NDVI_20250312_merged.tif",
+          "MOB_S2B_NDVI_20250319_merged.tif",
+          "MOB_S2B_trueColor_20250217_merged.tif",
+          "MOB_S2B_trueColor_20250312_merged.tif",
+          "MOB_S2B_trueColor_20250319_merged.tif",
+          "MOB_S2C_NDVI_20250317_merged.tif",
+          "MOB_S2C_trueColor_20250317_merged.tif",
+          "OHX_S2B_NDVI_20250312_merged.tif",
+          "OHX_S2B_trueColor_20250312_merged.tif",
+          "OHX_S2C_NDVI_20250317_merged.tif",
+          "OHX_S2C_trueColor_20250317_merged.tif",
+          "PAH_S2B_NDVI_20250318_merged.tif",
+          "PAH_S2B_trueColor_20250318_merged.tif",
+          "PAH_S2C_NDVI_20250310_merged.tif",
+          "PAH_S2C_NDVI_20250313_merged.tif",
+          "PAH_S2C_trueColor_20250310_merged.tif",
+          "PAH_S2C_trueColor_20250313_merged.tif"
+        ]
+      }
+    },
+    "202504_SevereWx_US": {
+      "landsat": {
+        "_files": [
+          "LC08_MNDWI_20250414_merged.tif",
+          "LC08_NDVI_20250414_merged.tif",
+          "LC08_trueColor_20250414_merged.tif",
+          "LC09_MNDWI_20250408_merged.tif",
+          "LC09_MNDWI_20250415_merged.tif",
+          "LC09_NDVI_20250408_merged.tif",
+          "LC09_NDVI_20250415_merged.tif",
+          "LC09_trueColor_20250408_merged.tif",
+          "LC09_trueColor_20250415_merged.tif"
+        ]
+      },
+      "planet": {
+        "042025_SevWxFloods_AOI1": {
+          "_files": [
+            "PlanetMap_NDVI_AOI1.tif",
+            "PlanetMap_NDWI_AOI1.tif",
+            "PlanetMap_Water_AOI1.tif"
+          ]
+        },
+        "042025_SevWxFloods_AOI2": {
+          "_files": [
+            "PlanetMap_NDVI_AOI2.tif",
+            "PlanetMap_NDWI_AOI2.tif",
+            "PlanetMap_Water_AOI2.tif"
+          ]
+        },
+        "042025_SevWxFloods_AOI3": {
+          "_files": [
+            "PlanetMap_NDVI_AOI3.tif",
+            "PlanetMap_NDWI_AOI3.tif",
+            "PlanetMap_Water_AOI3.tif"
+          ]
+        },
+        "042025_SevWxFloods_AOI4": {
+          "_files": [
+            "PlanetMap_NDVI_AOI4.tif",
+            "PlanetMap_NDWI_AOI4.tif",
+            "PlanetMap_Water_AOI4.tif"
+          ]
+        },
+        "Cincy-PreEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250318_164113_85_24ee_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164113_85_24ee_3B_udm2.tif",
+              "20250318_164116_08_24ee_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164116_08_24ee_3B_udm2.tif",
+              "20250318_164118_31_24ee_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164118_31_24ee_3B_udm2.tif",
+              "20250318_164120_54_24ee_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164120_54_24ee_3B_udm2.tif",
+              "20250318_164219_78_24f7_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164219_78_24f7_3B_udm2.tif",
+              "20250318_164222_04_24f7_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164222_04_24f7_3B_udm2.tif",
+              "20250318_164224_30_24f7_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164224_30_24f7_3B_udm2.tif",
+              "20250318_164557_84_24f4_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164557_84_24f4_3B_udm2.tif",
+              "20250318_164600_05_24f4_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164600_05_24f4_3B_udm2.tif",
+              "20250318_164602_27_24f4_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164602_27_24f4_3B_udm2.tif",
+              "20250318_164604_48_24f4_3B_AnalyticMS_SR_8b.tif",
+              "20250318_164604_48_24f4_3B_udm2.tif"
+            ]
+          }
+        },
+        "Cincy_PostEvent2_1_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250407_165216_12_2547_3B_AnalyticMS_SR_8b.tif",
+              "20250407_165216_12_2547_3B_udm2.tif",
+              "20250407_165218_50_2547_3B_AnalyticMS_SR_8b.tif",
+              "20250407_165218_50_2547_3B_udm2.tif",
+              "20250407_165220_87_2547_3B_AnalyticMS_SR_8b.tif",
+              "20250407_165220_87_2547_3B_udm2.tif",
+              "20250407_165223_25_2547_3B_AnalyticMS_SR_8b.tif",
+              "20250407_165223_25_2547_3B_udm2.tif"
+            ]
+          }
+        },
+        "Cincy_PostEvent2_2_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250408_160859_82_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160859_82_24b4_3B_udm2.tif",
+              "20250408_160901_67_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160901_67_24b4_3B_udm2.tif",
+              "20250408_160903_51_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160903_51_24b4_3B_udm2.tif",
+              "20250408_160905_36_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160905_36_24b4_3B_udm2.tif",
+              "20250408_164147_45_2513_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164147_45_2513_3B_udm2.tif",
+              "20250408_164149_72_2513_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164149_72_2513_3B_udm2.tif",
+              "20250408_164151_76_2513_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164151_76_2513_3B_udm2.tif",
+              "20250408_164154_03_2513_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164154_03_2513_3B_udm2.tif"
+            ]
+          }
+        },
+        "Cincy_PostEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250407_164133_79_250a_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164133_79_250a_3B_udm2.tif",
+              "20250407_164136_07_250a_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164136_07_250a_3B_udm2.tif",
+              "20250407_164138_36_250a_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164138_36_250a_3B_udm2.tif"
+            ]
+          }
+        },
+        "Lexington_PostEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250408_160916_45_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160916_45_24b4_3B_udm2.tif",
+              "20250408_160918_30_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160918_30_24b4_3B_udm2.tif",
+              "20250408_160920_15_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160920_15_24b4_3B_udm2.tif",
+              "20250408_160922_00_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160922_00_24b4_3B_udm2.tif",
+              "20250408_160923_85_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160923_85_24b4_3B_udm2.tif",
+              "20250408_160925_70_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160925_70_24b4_3B_udm2.tif",
+              "20250408_160927_55_24b4_3B_AnalyticMS_SR_8b.tif",
+              "20250408_160927_55_24b4_3B_udm2.tif",
+              "20250408_163938_32_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163938_32_2515_3B_udm2.tif",
+              "20250408_163940_38_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163940_38_2515_3B_udm2.tif",
+              "20250408_163942_45_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163942_45_2515_3B_udm2.tif",
+              "20250408_163944_52_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163944_52_2515_3B_udm2.tif",
+              "20250408_163946_59_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163946_59_2515_3B_udm2.tif",
+              "20250408_163948_65_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163948_65_2515_3B_udm2.tif",
+              "20250408_163950_72_2515_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163950_72_2515_3B_udm2.tif"
+            ]
+          }
+        },
+        "Lexington_PreEvent_1_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250328_160541_77_24bf_3B_AnalyticMS_SR_8b.tif",
+              "20250328_160541_77_24bf_3B_udm2.tif",
+              "20250328_160543_66_24bf_3B_AnalyticMS_SR_8b.tif",
+              "20250328_160543_66_24bf_3B_udm2.tif",
+              "20250328_160545_55_24bf_3B_AnalyticMS_SR_8b.tif",
+              "20250328_160545_55_24bf_3B_udm2.tif",
+              "20250328_160547_44_24bf_3B_AnalyticMS_SR_8b.tif",
+              "20250328_160547_44_24bf_3B_udm2.tif",
+              "20250328_160549_33_24bf_3B_AnalyticMS_SR_8b.tif",
+              "20250328_160549_33_24bf_3B_udm2.tif",
+              "20250328_161402_34_24c4_3B_AnalyticMS_SR_8b.tif",
+              "20250328_161402_34_24c4_3B_udm2.tif",
+              "20250328_161404_17_24c4_3B_AnalyticMS_SR_8b.tif",
+              "20250328_161404_17_24c4_3B_udm2.tif",
+              "20250328_161406_00_24c4_3B_AnalyticMS_SR_8b.tif",
+              "20250328_161406_00_24c4_3B_udm2.tif",
+              "20250328_161407_84_24c4_3B_AnalyticMS_SR_8b.tif",
+              "20250328_161407_84_24c4_3B_udm2.tif",
+              "20250328_164142_50_24ed_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164142_50_24ed_3B_udm2.tif",
+              "20250328_164144_68_24ed_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164144_68_24ed_3B_udm2.tif",
+              "20250328_164146_86_24ed_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164146_86_24ed_3B_udm2.tif",
+              "20250328_164149_03_24ed_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164149_03_24ed_3B_udm2.tif",
+              "20250328_164151_21_24ed_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164151_21_24ed_3B_udm2.tif",
+              "20250328_164547_65_24b7_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164547_65_24b7_3B_udm2.tif",
+              "20250328_164549_82_24b7_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164549_82_24b7_3B_udm2.tif",
+              "20250328_164551_98_24b7_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164551_98_24b7_3B_udm2.tif",
+              "20250328_164554_15_24b7_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164554_15_24b7_3B_udm2.tif",
+              "20250328_164556_32_24b7_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164556_32_24b7_3B_udm2.tif"
+            ]
+          }
+        },
+        "Lexington_PreEvent_2_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250328_161409_67_24c4_3B_AnalyticMS_SR_8b.tif",
+              "20250328_161409_67_24c4_3B_udm2.tif"
+            ]
+          }
+        },
+        "LouisvilleKY_PostEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250407_164635_43_250e_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164635_43_250e_3B_udm2.tif",
+              "20250407_164637_69_250e_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164637_69_250e_3B_udm2.tif",
+              "20250407_164642_20_250e_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164642_20_250e_3B_udm2.tif",
+              "20250407_164644_45_250e_3B_AnalyticMS_SR_8b.tif",
+              "20250407_164644_45_250e_3B_udm2.tif"
+            ]
+          }
+        },
+        "LouisvilleKY_PreEvent_1_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250321_164655_55_24d5_3B_AnalyticMS_SR_8b.tif",
+              "20250321_164655_55_24d5_3B_udm2.tif",
+              "20250321_164657_75_24d5_3B_AnalyticMS_SR_8b.tif",
+              "20250321_164657_75_24d5_3B_udm2.tif"
+            ]
+          }
+        },
+        "LouisvilleKY_PreEvent_2_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250328_164933_66_24f5_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164933_66_24f5_3B_udm2.tif",
+              "20250328_164935_85_24f5_3B_AnalyticMS_SR_8b.tif",
+              "20250328_164935_85_24f5_3B_udm2.tif"
+            ]
+          }
+        },
+        "LouisvilleKY_PreEvent_3_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250324_164842_16_2507_3B_AnalyticMS_SR_8b.tif",
+              "20250324_164842_16_2507_3B_udm2.tif",
+              "20250324_164844_40_2507_3B_AnalyticMS_SR_8b.tif",
+              "20250324_164844_40_2507_3B_udm2.tif",
+              "20250324_164846_65_2507_3B_AnalyticMS_SR_8b.tif",
+              "20250324_164846_65_2507_3B_udm2.tif",
+              "20250324_165003_49_24df_3B_AnalyticMS_SR_8b.tif",
+              "20250324_165003_49_24df_3B_udm2.tif",
+              "20250324_165005_69_24df_3B_AnalyticMS_SR_8b.tif",
+              "20250324_165005_69_24df_3B_udm2.tif",
+              "20250324_165007_89_24df_3B_AnalyticMS_SR_8b.tif",
+              "20250324_165007_89_24df_3B_udm2.tif"
+            ]
+          }
+        },
+        "_files": [
+          "Planet_trueColor_20250318_7940274_merged.tif",
+          "Planet_trueColor_20250318_7940423_merged.tif",
+          "Planet_trueColor_20250318_7940572_merged.tif",
+          "Planet_trueColor_20250321_7947493_merged.tif",
+          "Planet_trueColor_20250324_7954778_merged.tif",
+          "Planet_trueColor_20250324_7954996_merged.tif",
+          "Planet_trueColor_20250324_7955497_merged.tif",
+          "Planet_trueColor_20250328_7963922_merged.tif",
+          "Planet_trueColor_20250328_7963947_merged.tif",
+          "Planet_trueColor_20250328_7963958_merged.tif",
+          "Planet_trueColor_20250328_7963970_merged.tif",
+          "Planet_trueColor_20250328_7964074_merged.tif",
+          "Planet_trueColor_20250328_7964562_merged.tif",
+          "Planet_trueColor_20250407_7987235_merged.tif",
+          "Planet_trueColor_20250407_7987285_merged.tif",
+          "Planet_trueColor_20250407_7988490_merged.tif",
+          "Planet_trueColor_20250408_7989031_merged.tif",
+          "Planet_trueColor_20250408_7989129_merged.tif",
+          "Planet_trueColor_20250408_7989144_merged.tif",
+          "Planet_trueColor_20250408_7989195_merged.tif",
+          "Planet_trueColor_20250408_7989325_merged.tif"
+        ],
+        "Salyersville_PreEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250328_163723_57_24d1_3B_AnalyticMS_SR_8b.tif",
+              "20250328_163723_57_24d1_3B_udm2.tif",
+              "20250328_163725_80_24d1_3B_AnalyticMS_SR_8b.tif",
+              "20250328_163725_80_24d1_3B_udm2.tif"
+            ]
+          }
+        },
+        "Saylersville_and_Vanceburg_PostEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250408_163859_88_24e1_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163859_88_24e1_3B_udm2.tif",
+              "20250408_163902_01_24e1_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163902_01_24e1_3B_udm2.tif",
+              "20250408_163904_14_24e1_3B_AnalyticMS_SR_8b.tif",
+              "20250408_163904_14_24e1_3B_udm2.tif",
+              "20250408_164533_49_2539_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164533_49_2539_3B_udm2.tif",
+              "20250408_164535_88_2539_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164535_88_2539_3B_udm2.tif",
+              "20250408_164545_40_2539_3B_AnalyticMS_SR_8b.tif",
+              "20250408_164545_40_2539_3B_udm2.tif"
+            ]
+          }
+        },
+        "Vanceburg_PreEvent_psscene_analytic_8b_sr_udm2": {
+          "PSScene": {
+            "_files": [
+              "20250324_155950_18_24a7_3B_AnalyticMS_SR_8b.tif",
+              "20250324_155950_18_24a7_3B_udm2.tif",
+              "20250324_155952_12_24a7_3B_AnalyticMS_SR_8b.tif",
+              "20250324_155952_12_24a7_3B_udm2.tif"
+            ]
+          }
+        }
+      },
+      "projects": {
+        "landsat": {
+          "landsat.Overviews": {
+            "MNDWI_April14.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000048_C00000014.tif",
+                "Ov_i02_L01_R00000048_C00000015.tif",
+                "Ov_i02_L01_R00000048_C00000016.tif",
+                "Ov_i02_L01_R00000049_C00000014.tif",
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000014.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000014.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000014.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000006.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000006.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "MNDWI_April15.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "MNDWI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April14.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000048_C00000014.tif",
+                "Ov_i02_L01_R00000048_C00000015.tif",
+                "Ov_i02_L01_R00000048_C00000016.tif",
+                "Ov_i02_L01_R00000049_C00000014.tif",
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000014.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000014.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000014.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000006.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000006.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April15.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "True_April14.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000048_C00000014.tif",
+                "Ov_i02_L01_R00000048_C00000015.tif",
+                "Ov_i02_L01_R00000048_C00000016.tif",
+                "Ov_i02_L01_R00000049_C00000014.tif",
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000014.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000014.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000014.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000006.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000006.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "True_April15.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            },
+            "True_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000049_C00000015.tif",
+                "Ov_i02_L01_R00000049_C00000016.tif",
+                "Ov_i02_L01_R0000004A_C00000015.tif",
+                "Ov_i02_L01_R0000004A_C00000016.tif",
+                "Ov_i02_L01_R0000004B_C00000015.tif",
+                "Ov_i02_L01_R0000004B_C00000016.tif",
+                "Ov_i02_L01_R0000004C_C00000015.tif",
+                "Ov_i02_L01_R0000004C_C00000016.tif",
+                "Ov_i02_L02_R00000018_C00000007.tif",
+                "Ov_i02_L02_R00000019_C00000007.tif",
+                "Ov_i02_L03_R00000008_C00000002.tif",
+                "Ov_i02_L04_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "planet": {
+          "planet.Overviews": {
+            "April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F2_C000000E2.tif",
+                "Ov_i02_L01_R000002F2_C000000E3.tif",
+                "Ov_i02_L01_R000002F2_C000000E4.tif",
+                "Ov_i02_L01_R000002F3_C000000E2.tif",
+                "Ov_i02_L01_R000002F3_C000000E3.tif",
+                "Ov_i02_L01_R000002F3_C000000E4.tif",
+                "Ov_i02_L01_R000002F4_C000000E2.tif",
+                "Ov_i02_L01_R000002F4_C000000E3.tif",
+                "Ov_i02_L01_R000002F4_C000000E4.tif",
+                "Ov_i02_L01_R000002F5_C000000E5.tif",
+                "Ov_i02_L01_R000002F5_C000000E6.tif",
+                "Ov_i02_L01_R000002F5_C000000E7.tif",
+                "Ov_i02_L01_R000002F5_C000000E8.tif",
+                "Ov_i02_L01_R000002F6_C000000E5.tif",
+                "Ov_i02_L01_R000002F6_C000000E6.tif",
+                "Ov_i02_L01_R000002F6_C000000E7.tif",
+                "Ov_i02_L01_R000002F6_C000000E8.tif",
+                "Ov_i02_L01_R000002F7_C000000E5.tif",
+                "Ov_i02_L01_R000002F7_C000000E6.tif",
+                "Ov_i02_L01_R000002F7_C000000E7.tif",
+                "Ov_i02_L02_R000000FB_C0000004B.tif",
+                "Ov_i02_L02_R000000FB_C0000004C.tif",
+                "Ov_i02_L02_R000000FC_C0000004B.tif",
+                "Ov_i02_L02_R000000FC_C0000004C.tif",
+                "Ov_i02_L02_R000000FC_C0000004D.tif",
+                "Ov_i02_L02_R000000FD_C0000004C.tif",
+                "Ov_i02_L02_R000000FD_C0000004D.tif",
+                "Ov_i02_L03_R00000053_C00000019.tif",
+                "Ov_i02_L03_R00000054_C00000019.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif",
+                "Ov_i02_L06_R00000003_C00000000.tif"
+              ]
+            },
+            "April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F0_C000000E6.tif",
+                "Ov_i02_L01_R000002F0_C000000E7.tif",
+                "Ov_i02_L01_R000002F0_C000000E8.tif",
+                "Ov_i02_L01_R000002F1_C000000E5.tif",
+                "Ov_i02_L01_R000002F1_C000000E6.tif",
+                "Ov_i02_L01_R000002F1_C000000E7.tif",
+                "Ov_i02_L01_R000002F1_C000000E8.tif",
+                "Ov_i02_L01_R000002F2_C000000E5.tif",
+                "Ov_i02_L01_R000002F2_C000000E6.tif",
+                "Ov_i02_L01_R000002F2_C000000E7.tif",
+                "Ov_i02_L01_R000002F2_C000000E8.tif",
+                "Ov_i02_L01_R000002F2_C000000E9.tif",
+                "Ov_i02_L01_R000002F2_C000000EA.tif",
+                "Ov_i02_L01_R000002F2_C000000EB.tif",
+                "Ov_i02_L01_R000002F3_C000000E5.tif",
+                "Ov_i02_L01_R000002F3_C000000E6.tif",
+                "Ov_i02_L01_R000002F3_C000000E7.tif",
+                "Ov_i02_L01_R000002F3_C000000E8.tif",
+                "Ov_i02_L01_R000002F3_C000000E9.tif",
+                "Ov_i02_L01_R000002F3_C000000EA.tif",
+                "Ov_i02_L01_R000002F3_C000000EB.tif",
+                "Ov_i02_L01_R000002F4_C000000E6.tif",
+                "Ov_i02_L01_R000002F4_C000000E7.tif",
+                "Ov_i02_L01_R000002F4_C000000E8.tif",
+                "Ov_i02_L01_R000002F4_C000000E9.tif",
+                "Ov_i02_L01_R000002F4_C000000EA.tif",
+                "Ov_i02_L01_R000002F4_C000000EB.tif",
+                "Ov_i02_L01_R000002F5_C000000E5.tif",
+                "Ov_i02_L01_R000002F5_C000000E6.tif",
+                "Ov_i02_L01_R000002F5_C000000E7.tif",
+                "Ov_i02_L01_R000002F5_C000000E8.tif",
+                "Ov_i02_L01_R000002F5_C000000E9.tif",
+                "Ov_i02_L01_R000002F5_C000000EA.tif",
+                "Ov_i02_L01_R000002F5_C000000EB.tif",
+                "Ov_i02_L01_R000002F6_C000000E5.tif",
+                "Ov_i02_L01_R000002F6_C000000E6.tif",
+                "Ov_i02_L01_R000002F6_C000000E7.tif",
+                "Ov_i02_L01_R000002F6_C000000E8.tif",
+                "Ov_i02_L01_R000002F6_C000000E9.tif",
+                "Ov_i02_L01_R000002F6_C000000EA.tif",
+                "Ov_i02_L01_R000002F7_C000000E5.tif",
+                "Ov_i02_L01_R000002F7_C000000E6.tif",
+                "Ov_i02_L01_R000002F7_C000000E7.tif",
+                "Ov_i02_L02_R000000FA_C0000004C.tif",
+                "Ov_i02_L02_R000000FA_C0000004D.tif",
+                "Ov_i02_L02_R000000FB_C0000004C.tif",
+                "Ov_i02_L02_R000000FB_C0000004D.tif",
+                "Ov_i02_L02_R000000FB_C0000004E.tif",
+                "Ov_i02_L02_R000000FC_C0000004C.tif",
+                "Ov_i02_L02_R000000FC_C0000004D.tif",
+                "Ov_i02_L02_R000000FC_C0000004E.tif",
+                "Ov_i02_L02_R000000FD_C0000004C.tif",
+                "Ov_i02_L02_R000000FD_C0000004D.tif",
+                "Ov_i02_L03_R00000053_C00000019.tif",
+                "Ov_i02_L03_R00000053_C0000001A.tif",
+                "Ov_i02_L03_R00000054_C00000019.tif",
+                "Ov_i02_L03_R00000054_C0000001A.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif",
+                "Ov_i02_L06_R00000003_C00000000.tif"
+              ]
+            },
+            "Mar18.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F5_C000000E5.tif",
+                "Ov_i02_L01_R000002F5_C000000E6.tif",
+                "Ov_i02_L01_R000002F5_C000000E7.tif",
+                "Ov_i02_L01_R000002F5_C000000E8.tif",
+                "Ov_i02_L01_R000002F6_C000000E5.tif",
+                "Ov_i02_L01_R000002F6_C000000E6.tif",
+                "Ov_i02_L01_R000002F6_C000000E7.tif",
+                "Ov_i02_L01_R000002F6_C000000E8.tif",
+                "Ov_i02_L01_R000002F7_C000000E5.tif",
+                "Ov_i02_L01_R000002F7_C000000E6.tif",
+                "Ov_i02_L01_R000002F7_C000000E7.tif",
+                "Ov_i02_L01_R000002F7_C000000E8.tif",
+                "Ov_i02_L02_R000000FC_C0000004C.tif",
+                "Ov_i02_L02_R000000FC_C0000004D.tif",
+                "Ov_i02_L02_R000000FD_C0000004C.tif",
+                "Ov_i02_L02_R000000FD_C0000004D.tif",
+                "Ov_i02_L03_R00000054_C00000019.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar21.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F3_C000000E3.tif",
+                "Ov_i02_L01_R000002F3_C000000E4.tif",
+                "Ov_i02_L01_R000002F4_C000000E3.tif",
+                "Ov_i02_L01_R000002F4_C000000E4.tif",
+                "Ov_i02_L02_R000000FB_C0000004B.tif",
+                "Ov_i02_L02_R000000FB_C0000004C.tif",
+                "Ov_i02_L02_R000000FC_C0000004B.tif",
+                "Ov_i02_L02_R000000FC_C0000004C.tif",
+                "Ov_i02_L03_R00000053_C00000019.tif",
+                "Ov_i02_L03_R00000054_C00000019.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif"
+              ]
+            },
+            "Mar24.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F1_C000000E3.tif",
+                "Ov_i02_L01_R000002F1_C000000E4.tif",
+                "Ov_i02_L01_R000002F2_C000000E2.tif",
+                "Ov_i02_L01_R000002F2_C000000E3.tif",
+                "Ov_i02_L01_R000002F2_C000000E4.tif",
+                "Ov_i02_L01_R000002F3_C000000E2.tif",
+                "Ov_i02_L01_R000002F3_C000000E3.tif",
+                "Ov_i02_L01_R000002F3_C000000E4.tif",
+                "Ov_i02_L01_R000002F4_C000000E9.tif",
+                "Ov_i02_L01_R000002F4_C000000EA.tif",
+                "Ov_i02_L01_R000002F5_C000000E9.tif",
+                "Ov_i02_L01_R000002F5_C000000EA.tif",
+                "Ov_i02_L02_R000000FB_C0000004B.tif",
+                "Ov_i02_L02_R000000FB_C0000004C.tif",
+                "Ov_i02_L02_R000000FC_C0000004D.tif",
+                "Ov_i02_L02_R000000FC_C0000004E.tif",
+                "Ov_i02_L03_R00000053_C00000019.tif",
+                "Ov_i02_L03_R00000054_C00000019.tif",
+                "Ov_i02_L03_R00000054_C0000001A.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            },
+            "Mar28.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000002F1_C000000E5.tif",
+                "Ov_i02_L01_R000002F1_C000000E6.tif",
+                "Ov_i02_L01_R000002F1_C000000E7.tif",
+                "Ov_i02_L01_R000002F1_C000000E8.tif",
+                "Ov_i02_L01_R000002F1_C000000E9.tif",
+                "Ov_i02_L01_R000002F1_C000000EA.tif",
+                "Ov_i02_L01_R000002F2_C000000E5.tif",
+                "Ov_i02_L01_R000002F2_C000000E6.tif",
+                "Ov_i02_L01_R000002F2_C000000E7.tif",
+                "Ov_i02_L01_R000002F2_C000000E8.tif",
+                "Ov_i02_L01_R000002F2_C000000E9.tif",
+                "Ov_i02_L01_R000002F2_C000000EA.tif",
+                "Ov_i02_L01_R000002F3_C000000E3.tif",
+                "Ov_i02_L01_R000002F3_C000000E4.tif",
+                "Ov_i02_L01_R000002F3_C000000E5.tif",
+                "Ov_i02_L01_R000002F3_C000000E6.tif",
+                "Ov_i02_L01_R000002F3_C000000E7.tif",
+                "Ov_i02_L01_R000002F3_C000000E8.tif",
+                "Ov_i02_L01_R000002F3_C000000E9.tif",
+                "Ov_i02_L01_R000002F3_C000000EA.tif",
+                "Ov_i02_L01_R000002F4_C000000E3.tif",
+                "Ov_i02_L01_R000002F4_C000000E4.tif",
+                "Ov_i02_L02_R000000FB_C0000004B.tif",
+                "Ov_i02_L02_R000000FB_C0000004C.tif",
+                "Ov_i02_L02_R000000FB_C0000004D.tif",
+                "Ov_i02_L02_R000000FB_C0000004E.tif",
+                "Ov_i02_L02_R000000FC_C0000004B.tif",
+                "Ov_i02_L02_R000000FC_C0000004C.tif",
+                "Ov_i02_L03_R00000053_C00000019.tif",
+                "Ov_i02_L03_R00000053_C0000001A.tif",
+                "Ov_i02_L03_R00000054_C00000019.tif",
+                "Ov_i02_L04_R0000001B_C00000008.tif",
+                "Ov_i02_L04_R0000001C_C00000008.tif",
+                "Ov_i02_L05_R00000009_C00000002.tif"
+              ]
+            }
+          }
+        },
+        "sentinel2_jan": {
+          "sentinel2_jan.Overviews": {
+            "MNDWI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006E_C00000020.tif",
+                "Ov_i02_L01_R0000006E_C00000021.tif",
+                "Ov_i02_L01_R0000006F_C00000020.tif",
+                "Ov_i02_L01_R0000006F_C00000021.tif",
+                "Ov_i02_L02_R00000024_C0000000A.tif",
+                "Ov_i02_L02_R00000024_C0000000B.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif"
+              ]
+            },
+            "MNDWI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006E_C0000001F.tif",
+                "Ov_i02_L01_R0000006E_C00000020.tif",
+                "Ov_i02_L01_R0000006E_C00000021.tif",
+                "Ov_i02_L01_R0000006F_C0000001F.tif",
+                "Ov_i02_L01_R0000006F_C00000020.tif",
+                "Ov_i02_L01_R0000006F_C00000021.tif",
+                "Ov_i02_L02_R00000024_C0000000A.tif",
+                "Ov_i02_L02_R00000024_C0000000B.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif",
+                "Ov_i02_L05_R00000001_C00000000.tif"
+              ]
+            },
+            "NDVI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DC_C00000040.tif",
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C00000040.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DC_C00000040.tif",
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C00000040.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DC_C00000040.tif",
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C00000040.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DC_C00000040.tif",
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C00000040.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "sentinel2_lzk": {
+          "sentinel2_lzk.Overviews": {
+            "MNDWI_April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006E_C0000001E.tif",
+                "Ov_i02_L01_R0000006E_C0000001F.tif",
+                "Ov_i02_L01_R0000006E_C00000020.tif",
+                "Ov_i02_L01_R0000006F_C0000001E.tif",
+                "Ov_i02_L01_R0000006F_C0000001F.tif",
+                "Ov_i02_L01_R0000006F_C00000020.tif",
+                "Ov_i02_L01_R00000070_C0000001E.tif",
+                "Ov_i02_L01_R00000070_C0000001F.tif",
+                "Ov_i02_L01_R00000070_C00000020.tif",
+                "Ov_i02_L02_R00000024_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif",
+                "Ov_i02_L05_R00000001_C00000000.tif"
+              ]
+            },
+            "MNDWI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006F_C0000001F.tif",
+                "Ov_i02_L01_R0000006F_C00000020.tif",
+                "Ov_i02_L01_R00000070_C0000001F.tif",
+                "Ov_i02_L01_R00000070_C00000020.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif"
+              ]
+            },
+            "NDVI_April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C0000003D.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C0000003D.tif",
+                "Ov_i02_L01_R000000E1_C0000003E.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000014.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000006.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C0000003E.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000014.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000006.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C0000003D.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C0000003D.tif",
+                "Ov_i02_L01_R000000E1_C0000003E.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000014.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000006.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C0000003E.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000014.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000006.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "sentinel2_meg": {
+          "sentinel2_meg.Overviews": {
+            "MDWI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006F_C00000020.tif",
+                "Ov_i02_L01_R0000006F_C00000021.tif",
+                "Ov_i02_L01_R00000070_C00000020.tif",
+                "Ov_i02_L01_R00000070_C00000021.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif"
+              ]
+            },
+            "MNDWI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006F_C0000001F.tif",
+                "Ov_i02_L01_R0000006F_C00000020.tif",
+                "Ov_i02_L01_R0000006F_C00000021.tif",
+                "Ov_i02_L01_R00000070_C0000001F.tif",
+                "Ov_i02_L01_R00000070_C00000020.tif",
+                "Ov_i02_L01_R00000070_C00000021.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif",
+                "Ov_i02_L05_R00000001_C00000000.tif"
+              ]
+            },
+            "NDVI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C00000041.tif",
+                "Ov_i02_L01_R000000DC_C00000042.tif",
+                "Ov_i02_L01_R000000DD_C00000041.tif",
+                "Ov_i02_L01_R000000DD_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R00000049_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C00000040.tif",
+                "Ov_i02_L01_R000000DE_C00000041.tif",
+                "Ov_i02_L01_R000000DE_C00000042.tif",
+                "Ov_i02_L01_R000000DE_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C00000040.tif",
+                "Ov_i02_L01_R000000DF_C00000041.tif",
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "sentinel2_ohx": {
+          "sentinel2_ohx.Overviews": {
+            "MNDWI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006F_C00000021.tif",
+                "Ov_i02_L01_R0000006F_C00000022.tif",
+                "Ov_i02_L01_R00000070_C00000021.tif",
+                "Ov_i02_L01_R00000070_C00000022.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif"
+              ]
+            },
+            "NDVI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C00000044.tif",
+                "Ov_i02_L01_R000000DF_C00000045.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000044.tif",
+                "Ov_i02_L01_R000000E0_C00000045.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000044.tif",
+                "Ov_i02_L01_R000000E1_C00000045.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000017.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000017.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C00000044.tif",
+                "Ov_i02_L01_R000000DF_C00000045.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000044.tif",
+                "Ov_i02_L01_R000000E0_C00000045.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000044.tif",
+                "Ov_i02_L01_R000000E1_C00000045.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000017.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000017.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C00000044.tif",
+                "Ov_i02_L01_R000000DF_C00000045.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000044.tif",
+                "Ov_i02_L01_R000000E0_C00000045.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000044.tif",
+                "Ov_i02_L01_R000000E1_C00000045.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000017.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000017.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DF_C00000042.tif",
+                "Ov_i02_L01_R000000DF_C00000043.tif",
+                "Ov_i02_L01_R000000DF_C00000044.tif",
+                "Ov_i02_L01_R000000DF_C00000045.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000044.tif",
+                "Ov_i02_L01_R000000E0_C00000045.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000044.tif",
+                "Ov_i02_L01_R000000E1_C00000045.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004A_C00000017.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000017.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "sentinel2_pah": {
+          "sentinel2_pah.Overviews": {
+            "MDNWI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000070_C00000020.tif",
+                "Ov_i02_L01_R00000070_C00000021.tif",
+                "Ov_i02_L01_R00000070_C00000022.tif",
+                "Ov_i02_L01_R00000071_C00000020.tif",
+                "Ov_i02_L01_R00000071_C00000021.tif",
+                "Ov_i02_L01_R00000071_C00000022.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif"
+              ]
+            },
+            "MNDWI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R00000070_C0000001F.tif",
+                "Ov_i02_L01_R00000070_C00000020.tif",
+                "Ov_i02_L01_R00000070_C00000021.tif",
+                "Ov_i02_L01_R00000071_C0000001F.tif",
+                "Ov_i02_L01_R00000071_C00000020.tif",
+                "Ov_i02_L01_R00000071_C00000021.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000B.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif"
+              ]
+            },
+            "NDVI_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000044.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000044.tif",
+                "Ov_i02_L01_R000000E2_C00000041.tif",
+                "Ov_i02_L01_R000000E2_C00000042.tif",
+                "Ov_i02_L01_R000000E2_C00000043.tif",
+                "Ov_i02_L01_R000000E2_C00000044.tif",
+                "Ov_i02_L01_R000000E3_C00000041.tif",
+                "Ov_i02_L01_R000000E3_C00000042.tif",
+                "Ov_i02_L01_R000000E3_C00000043.tif",
+                "Ov_i02_L01_R000000E3_C00000044.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E2_C0000003F.tif",
+                "Ov_i02_L01_R000000E2_C00000040.tif",
+                "Ov_i02_L01_R000000E2_C00000041.tif",
+                "Ov_i02_L01_R000000E2_C00000042.tif",
+                "Ov_i02_L01_R000000E2_C00000043.tif",
+                "Ov_i02_L01_R000000E3_C0000003F.tif",
+                "Ov_i02_L01_R000000E3_C00000040.tif",
+                "Ov_i02_L01_R000000E3_C00000041.tif",
+                "Ov_i02_L01_R000000E3_C00000042.tif",
+                "Ov_i02_L01_R000000E3_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E2_C0000003F.tif",
+                "Ov_i02_L01_R000000E2_C00000040.tif",
+                "Ov_i02_L01_R000000E2_C00000041.tif",
+                "Ov_i02_L01_R000000E2_C00000042.tif",
+                "Ov_i02_L01_R000000E2_C00000043.tif",
+                "Ov_i02_L01_R000000E3_C0000003F.tif",
+                "Ov_i02_L01_R000000E3_C00000040.tif",
+                "Ov_i02_L01_R000000E3_C00000041.tif",
+                "Ov_i02_L01_R000000E3_C00000042.tif",
+                "Ov_i02_L01_R000000E3_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April8.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E0_C00000044.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C00000044.tif",
+                "Ov_i02_L01_R000000E2_C00000041.tif",
+                "Ov_i02_L01_R000000E2_C00000042.tif",
+                "Ov_i02_L01_R000000E2_C00000043.tif",
+                "Ov_i02_L01_R000000E2_C00000044.tif",
+                "Ov_i02_L01_R000000E3_C00000041.tif",
+                "Ov_i02_L01_R000000E3_C00000042.tif",
+                "Ov_i02_L01_R000000E3_C00000043.tif",
+                "Ov_i02_L01_R000000E3_C00000044.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April9.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E2_C0000003F.tif",
+                "Ov_i02_L01_R000000E2_C00000040.tif",
+                "Ov_i02_L01_R000000E2_C00000041.tif",
+                "Ov_i02_L01_R000000E2_C00000042.tif",
+                "Ov_i02_L01_R000000E2_C00000043.tif",
+                "Ov_i02_L01_R000000E3_C0000003F.tif",
+                "Ov_i02_L01_R000000E3_C00000040.tif",
+                "Ov_i02_L01_R000000E3_C00000041.tif",
+                "Ov_i02_L01_R000000E3_C00000042.tif",
+                "Ov_i02_L01_R000000E3_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar22.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C00000040.tif",
+                "Ov_i02_L01_R000000E0_C00000041.tif",
+                "Ov_i02_L01_R000000E0_C00000042.tif",
+                "Ov_i02_L01_R000000E0_C00000043.tif",
+                "Ov_i02_L01_R000000E1_C0000003F.tif",
+                "Ov_i02_L01_R000000E1_C00000040.tif",
+                "Ov_i02_L01_R000000E1_C00000041.tif",
+                "Ov_i02_L01_R000000E1_C00000042.tif",
+                "Ov_i02_L01_R000000E1_C00000043.tif",
+                "Ov_i02_L01_R000000E2_C0000003F.tif",
+                "Ov_i02_L01_R000000E2_C00000040.tif",
+                "Ov_i02_L01_R000000E2_C00000041.tif",
+                "Ov_i02_L01_R000000E2_C00000042.tif",
+                "Ov_i02_L01_R000000E2_C00000043.tif",
+                "Ov_i02_L01_R000000E3_C0000003F.tif",
+                "Ov_i02_L01_R000000E3_C00000040.tif",
+                "Ov_i02_L01_R000000E3_C00000041.tif",
+                "Ov_i02_L01_R000000E3_C00000042.tif",
+                "Ov_i02_L01_R000000E3_C00000043.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000016.tif",
+                "Ov_i02_L02_R0000004B_C00000015.tif",
+                "Ov_i02_L02_R0000004B_C00000016.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L03_R00000019_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        },
+        "sentinel2_shv": {
+          "sentinel2_shv.Overviews": {
+            "MNDWI_April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R0000006E_C0000001E.tif",
+                "Ov_i02_L01_R0000006E_C0000001F.tif",
+                "Ov_i02_L01_R0000006F_C0000001E.tif",
+                "Ov_i02_L01_R0000006F_C0000001F.tif",
+                "Ov_i02_L01_R00000070_C0000001E.tif",
+                "Ov_i02_L01_R00000070_C0000001F.tif",
+                "Ov_i02_L02_R00000024_C0000000A.tif",
+                "Ov_i02_L02_R00000025_C0000000A.tif",
+                "Ov_i02_L03_R0000000C_C00000003.tif",
+                "Ov_i02_L04_R00000004_C00000001.tif",
+                "Ov_i02_L05_R00000001_C00000000.tif"
+              ]
+            },
+            "NDVI_April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003C.tif",
+                "Ov_i02_L01_R000000DC_C0000003D.tif",
+                "Ov_i02_L01_R000000DC_C0000003E.tif",
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C0000003C.tif",
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C0000003C.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C0000003C.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C0000003C.tif",
+                "Ov_i02_L01_R000000E0_C0000003D.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003D.tif",
+                "Ov_i02_L01_R000000DC_C0000003E.tif",
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "NDVI_Mar31.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003C.tif",
+                "Ov_i02_L01_R000000DC_C0000003D.tif",
+                "Ov_i02_L01_R000000DC_C0000003E.tif",
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C0000003C.tif",
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C0000003C.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C0000003C.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C0000003C.tif",
+                "Ov_i02_L01_R000000E0_C0000003D.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_April7.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003C.tif",
+                "Ov_i02_L01_R000000DC_C0000003D.tif",
+                "Ov_i02_L01_R000000DC_C0000003E.tif",
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C0000003C.tif",
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C0000003C.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C0000003C.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C0000003C.tif",
+                "Ov_i02_L01_R000000E0_C0000003D.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar13.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003D.tif",
+                "Ov_i02_L01_R000000DC_C0000003E.tif",
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            },
+            "TrueColor_Mar31.Overviews": {
+              "_files": [
+                "Ov_i02_L01_R000000DC_C0000003C.tif",
+                "Ov_i02_L01_R000000DC_C0000003D.tif",
+                "Ov_i02_L01_R000000DC_C0000003E.tif",
+                "Ov_i02_L01_R000000DC_C0000003F.tif",
+                "Ov_i02_L01_R000000DD_C0000003C.tif",
+                "Ov_i02_L01_R000000DD_C0000003D.tif",
+                "Ov_i02_L01_R000000DD_C0000003E.tif",
+                "Ov_i02_L01_R000000DD_C0000003F.tif",
+                "Ov_i02_L01_R000000DE_C0000003C.tif",
+                "Ov_i02_L01_R000000DE_C0000003D.tif",
+                "Ov_i02_L01_R000000DE_C0000003E.tif",
+                "Ov_i02_L01_R000000DE_C0000003F.tif",
+                "Ov_i02_L01_R000000DF_C0000003C.tif",
+                "Ov_i02_L01_R000000DF_C0000003D.tif",
+                "Ov_i02_L01_R000000DF_C0000003E.tif",
+                "Ov_i02_L01_R000000DF_C0000003F.tif",
+                "Ov_i02_L01_R000000E0_C0000003C.tif",
+                "Ov_i02_L01_R000000E0_C0000003D.tif",
+                "Ov_i02_L01_R000000E0_C0000003E.tif",
+                "Ov_i02_L01_R000000E0_C0000003F.tif",
+                "Ov_i02_L02_R00000049_C00000014.tif",
+                "Ov_i02_L02_R00000049_C00000015.tif",
+                "Ov_i02_L02_R0000004A_C00000014.tif",
+                "Ov_i02_L02_R0000004A_C00000015.tif",
+                "Ov_i02_L03_R00000018_C00000006.tif",
+                "Ov_i02_L03_R00000018_C00000007.tif",
+                "Ov_i02_L04_R00000008_C00000002.tif",
+                "Ov_i02_L05_R00000002_C00000000.tif"
+              ]
+            }
+          }
+        }
+      },
+      "sentinel2": {
+        "_files": [
+          "JAN_S2A_MNDWI_20250408_merged.tif",
+          "JAN_S2A_NDVI_20250322_merged.tif",
+          "JAN_S2A_NDVI_20250408_merged.tif",
+          "JAN_S2A_trueColor_20250322_merged.tif",
+          "JAN_S2A_trueColor_20250408_merged.tif",
+          "JAN_S2B_NDVI_20250322_merged.tif",
+          "JAN_S2B_trueColor_20250322_merged.tif",
+          "JAN_S2C_MNDWI_20250409_merged.tif",
+          "JAN_S2C_NDVI_20250409_merged.tif",
+          "JAN_S2C_trueColor_20250409_merged.tif",
+          "LZK_S2B_MNDWI_20250407_merged.tif",
+          "LZK_S2B_NDVI_20250407_merged.tif",
+          "LZK_S2B_trueColor_20250407_merged.tif",
+          "LZK_S2C_MNDWI_20250409_merged.tif",
+          "LZK_S2C_NDVI_20150313_merged.tif",
+          "LZK_S2C_NDVI_20250409_merged.tif",
+          "LZK_S2C_trueColor_20150313_merged.tif",
+          "LZK_S2C_trueColor_20250409_merged.tif",
+          "MEG_S2A_MNDWI_20250408_merged.tif",
+          "MEG_S2A_NDVI_20250322_merged.tif",
+          "MEG_S2A_NDVI_20250408_merged.tif",
+          "MEG_S2A_trueColor_20250322_merged.tif",
+          "MEG_S2A_trueColor_20250408_merged.tif",
+          "MEG_S2B_NDVI_20250322_merged.tif",
+          "MEG_S2B_trueColor_20250322_merged.tif",
+          "MEG_S2C_MNDWI_20250409_merged.tif",
+          "MEG_S2C_NDVI_20250409_merged.tif",
+          "MEG_S2C_trueColor_20250409_merged.tif",
+          "OHX_S2A_MNDWI_20250408_merged.tif",
+          "OHX_S2A_NDVI_20250322_merged.tif",
+          "OHX_S2A_NDVI_20250408_merged.tif",
+          "OHX_S2A_trueColor_20250322_merged.tif",
+          "OHX_S2A_trueColor_20250408_merged.tif",
+          "OHX_S2B_NDVI_20250322_merged.tif",
+          "OHX_S2B_trueColor_20250322_merged.tif",
+          "PAH_S2A_MNDWI_20250408_merged.tif",
+          "PAH_S2A_NDVI_20250322_merged.tif",
+          "PAH_S2A_NDVI_20250408_merged.tif",
+          "PAH_S2A_trueColor_20250322_merged.tif",
+          "PAH_S2A_trueColor_20250408_merged.tif",
+          "PAH_S2B_NDVI_20250322_merged.tif",
+          "PAH_S2B_trueColor_20250322_merged.tif",
+          "PAH_S2C_MNDWI_20250409_merged.tif",
+          "PAH_S2C_NDVI_20250409_merged.tif",
+          "PAH_S2C_trueColor_20250409_merged.tif",
+          "SHV_S2A_MNDWI_20250407_merged.tif",
+          "SHV_S2A_NDVI_20250407_merged.tif",
+          "SHV_S2A_trueColor_20250407_merged.tif",
+          "SHV_S2B_MNDWI_20250407_merged.tif",
+          "SHV_S2B_NDVI_20250331_merged.tif",
+          "SHV_S2B_NDVI_20250407_merged.tif",
+          "SHV_S2B_trueColor_20250331_merged.tif",
+          "SHV_S2B_trueColor_20250407_merged.tif",
+          "SHV_S2C_NDVI_20250313_merged.tif",
+          "SHV_S2C_trueColor_20250313_merged.tif"
+        ]
+      },
+      "viirs_flood": {
+        "_files": [
+          "day_WATER_VIIRS_2025_04_07.tif"
+        ]
+      }
+    },
+    "202506_Fire_NM": {
+      "aria": {
+        "dist_hls": {
+          "_files": [
+            "OPERA-DIST-ALERT-HLS-DIST-STATUS_20250624.tif",
+            "OPERA-DIST-ALERT-HLS-VEG-ANOM-MAX_20250624.tif",
+            "OPERA-DIST-ALERT-HLS-VEG-ANOM-MAX_20250626.tif",
+            "OPERA-DIST-ALERT-HLS-VEG-DIST-STATUS_20250626.tif"
+          ]
+        },
+        "dswx_hls": {
+          "_files": [
+            "OPERA_DSWx-HLS_V1_BWTR_2025-06-23.tif",
+            "OPERA_DSWx-HLS_V1_BWTR_2025-06-26.tif",
+            "OPERA_DSWx-HLS_V1_BWTR_2025-06-28.tif"
+          ]
+        }
+      },
+      "planet": {
+        "_files": [
+          "SevenSpringsFire_20250616.tif",
+          "SevenSpringsFire_20250618.tif",
+          "SevenSpringsFire_20250619.tif",
+          "SevenSpringsFire_20250622.tif",
+          "TroutFire_20250612.tif",
+          "TroutFire_20250618.tif",
+          "TroutFire_20250619.tif",
+          "TroutFire_20250620.tif",
+          "TroutFire_20250628.tif"
+        ]
+      },
+      "sentinel": {
+        "_files": [
+          "Mora_LasVegas_S2A_colorIR_20250628.tif",
+          "Mora_LasVegas_S2A_trueColor_20250628.tif",
+          "Mora_LasVegas_S2B_colorIR_20250611.tif",
+          "Mora_LasVegas_S2B_trueColor_20250611.tif",
+          "Roswell_Mescalero_S2A_colorIR_20250608.tif",
+          "Roswell_Mescalero_S2A_colorIR_20250621.tif",
+          "Roswell_Mescalero_S2A_colorIR_20250628.tif",
+          "Roswell_Mescalero_S2A_trueColor_20250608.tif",
+          "Roswell_Mescalero_S2A_trueColor_20250621.tif",
+          "Roswell_Mescalero_S2A_trueColor_20250628.tif",
+          "SilverCity_S2A_colorIR_20250621.tif",
+          "SilverCity_S2A_trueColor_20250621.tif",
+          "SilverCity_S2B_colorIR_20250614.tif",
+          "SilverCity_S2B_trueColor_20250614.tif",
+          "SilverCity_S2C_colorIR_20250609.tif",
+          "SilverCity_S2C_colorIR_20250619.tif",
+          "SilverCity_S2C_colorIR_20250629.tif",
+          "SilverCity_S2C_trueColor_20250609.tif",
+          "SilverCity_S2C_trueColor_20250619.tif",
+          "SilverCity_S2C_trueColor_20250629.tif"
+        ]
+      },
+      "sentinel1_flood": {
+        "_files": [
+          "Flooded_Areas_Roswell_Jun_2025 1.tif"
+        ]
+      }
+    }
+  },
+  "_metadata": {
+    "year": 2025,
+    "extracted_from": "drcs_activations_tif_files.json",
+    "created_at": "2025-08-28T10:14:54.172591",
+    "total_events": 5,
+    "total_tif_files": 2153,
+    "events": [
+      "202501_Fire_CA",
+      "202502_Flood_OhioValley",
+      "202503_SevereWx_US",
+      "202504_SevereWx_US",
+      "202506_Fire_NM"
+    ]
+  }
+}
