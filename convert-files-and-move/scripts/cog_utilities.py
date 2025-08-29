@@ -25,6 +25,9 @@ def check_cache_status(data_download_dir: str = "data_download") -> Tuple[int, i
     """
     if not os.path.exists(data_download_dir):
         print(f"📁 Cache directory does not exist: {data_download_dir}/")
+        print(f"   Creating cache directory...")
+        os.makedirs(data_download_dir, exist_ok=True)
+        print(f"✅ Cache directory created: {data_download_dir}/")
         return 0, 0
     
     # Count files and calculate total size
