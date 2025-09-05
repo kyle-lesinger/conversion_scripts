@@ -2,6 +2,53 @@
 import os
 import shutil
 import rasterio
+from rasterio.warp import calculate_default_transform, reproject, Resampling
+
+
+def set_no_data_value(ds):
+    print(f"   [NODATA] Data type: {ds.dtype}")
+    if ds.dtype == 'uint8':
+        # For RGB images (uint8), use 0 as nodata (black pixels)
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+    elif ds.dtype == 'uint16':
+        # For uint16, use 0 as nodata
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+    elif ds.dtype == 'int8':
+        # For int8, must use value within -128 to 127 range
+        nodata_value = -128
+        print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+    elif ds.dtype == 'int16':
+        # For int16, -9999 is fine
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+    else:
+        # For float32, int32, etc., use -9999
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+        
+    return nodata_value
+
+
+def validate_COG(tmp_name):
+    print(f"   [VALIDATE] Checking COG validity...")
+    is_valid_cog, validation_details = validate_cog(tmp_name)
+    
+    if is_valid_cog:
+        print(f"   [VALIDATE] ✅ Valid COG")
+    else:
+        print(f"   [VALIDATE] ⚠️ COG validation warnings")
+        critical_errors = [e for e in validation_details['errors'] if 'Invalid driver' in e]
+        if critical_errors:
+            raise ValueError(f"Critical COG validation failed")
+        if 'errors' in validation_details:
+            for error in validation_details['errors']:
+                print(f"      - {error}")
+        if 'warnings' in validation_details:
+            for warning in validation_details['warnings']
+                print(f"      - {warning}")
+    return 
 
 def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, local_output_dir=None):
     """
@@ -95,52 +142,15 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
             ds = ds.rename({"y": "lat", "x": "lon"})
             ds.rio.set_spatial_dims("lon", "lat", inplace=True)
         
-        # Smart nodata value handling based on data type
-        print(f"   [NODATA] Data type: {ds.dtype}")
-        if ds.dtype == 'uint8':
-            # For RGB images (uint8), use 0 as nodata (black pixels)
-            nodata_value = 0
-            print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
-        elif ds.dtype == 'uint16':
-            # For uint16, use 0 as nodata
-            nodata_value = 0
-            print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
-        elif ds.dtype == 'int8':
-            # For int8, must use value within -128 to 127 range
-            nodata_value = -128
-            print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
-        elif ds.dtype == 'int16':
-            # For int16, -9999 is fine
-            nodata_value = -9999
-            print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
-        else:
-            # For float32, int32, etc., use -9999
-            nodata_value = -9999
-            print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
-            
-        ds.rio.write_nodata(nodata_value, inplace=True)
+        #Smart nodata handling
+        ds.rio.write_nodata(set_no_data_value(ds), inplace=True)
 
         with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
             tmp_name = tmp.name
             ds.rio.to_raster(tmp_name, **COG_PROFILE)
             
             # Validate COG
-            print(f"   [VALIDATE] Checking COG validity...")
-            is_valid_cog, validation_details = validate_cog(tmp_name)
-            
-            if is_valid_cog:
-                print(f"   [VALIDATE] ✅ Valid COG")
-            else:
-                print(f"   [VALIDATE] ⚠️ COG validation warnings")
-                critical_errors = [e for e in validation_details['errors'] if 'Invalid driver' in e]
-                if critical_errors:
-                    raise ValueError(f"Critical COG validation failed")
-                if 'errors' in validation_details:
-                    for error in validation_details['errors']:
-                        print(f"      - {error}")
-                if 'warnings' in validation_details:
-                    for warning in validation_details['warnings']:
-                        print(f"      - {warning}")
+            validate_COG(tmp_name)
             
             # Upload to S3
             print(f"   [UPLOAD] Uploading to S3...")
@@ -328,32 +338,11 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
         
         # Use rasterio to create COG
         with rasterio.open(reproject_filename) as src:
-            # Smart nodata value handling based on data type
-            if ds.dtype == 'uint8':
-                # For RGB images (uint8), use 0 as nodata (black pixels)
-                nodata_value = 0
-                print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
-            elif ds.dtype == 'uint16':
-                # For uint16, use 0 as nodata
-                nodata_value = 0
-                print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
-            elif ds.dtype == 'int8':
-                # For int8, must use value within -128 to 127 range
-                nodata_value = -128
-                print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
-            elif ds.dtype == 'int16':
-                # For int16, -9999 is fine
-                nodata_value = -9999
-                print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
-            else:
-                # For float32, int32, etc., use -9999
-                nodata_value = -9999
-                print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
             
             # Update profile for COG
             profile = src.profile.copy()
             profile.update(COG_PROFILE)
-            profile['nodata'] = nodata_value
+            profile['nodata'] = set_no_data_value(ds)
             
             with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
                 tmp_name = tmp.name
@@ -372,22 +361,7 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 dst.write(data, band_idx, window=window)
                 
                 # Validate COG
-                print(f"   [VALIDATE] Checking COG validity...")
-                is_valid_cog, validation_details = validate_cog(tmp_name)
-                
-                if is_valid_cog:
-                    print(f"   [VALIDATE] ✅ Valid COG")
-                else:
-                    print(f"   [VALIDATE] ⚠️ COG validation warnings")
-                    critical_errors = [e for e in validation_details.get('errors', []) if 'Invalid driver' in e]
-                    if critical_errors:
-                        raise ValueError(f"Critical COG validation failed")
-                    if 'errors' in validation_details:
-                        for error in validation_details['errors']:
-                            print(f"      - {error}")
-                    if 'warnings' in validation_details:
-                        for warning in validation_details['warnings']:
-                            print(f"      - {warning}")
+                validate_COG(tmp_name)
                 
                 # Upload to S3
                 print(f"   [UPLOAD] Uploading to S3...")
