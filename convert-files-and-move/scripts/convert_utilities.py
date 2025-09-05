@@ -72,7 +72,7 @@ def set_no_data_value_src(src):
     else:
         # For float32, int32, etc., use -9999
         nodata_value = -9999
-        print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+        print(f"   [NODATA] Using nodata value {nodata_value} for {src.dtypes[0]} data")
         
     return nodata_value
 
