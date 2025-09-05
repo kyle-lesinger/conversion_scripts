@@ -47,6 +47,7 @@ def process_file_batch(
         save_metadata: Whether to save metadata to S3
         save_csv: Whether to save CSV log to S3
         verbose: Whether to print progress messages
+        BUCKET: source bucket (e.g., 'nasa-disasters')
     
     Returns:
         DataFrame containing processed file information

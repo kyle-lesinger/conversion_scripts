@@ -3,7 +3,28 @@ import os
 import shutil
 import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
+from rasterio.windows import Window
+import gc
+from tqdm import tqdm
+import numpy as np
+import tempfile
 
+
+# Import COG and cache utilities
+from cog_utilities import (
+    check_cache_status,
+    clear_cache,
+    validate_cog
+)
+
+
+from memory_utils import (
+    get_memory_usage,
+    calculate_optimal_chunk_size,
+    estimate_chunk_memory,
+    format_bytes
+
+)
 
 def set_no_data_value(ds):
     print(f"   [NODATA] Data type: {ds.dtype}")
@@ -30,6 +51,31 @@ def set_no_data_value(ds):
         
     return nodata_value
 
+def set_no_data_value_src(src):
+    print(f"   [NODATA] Data type: {src.dtypes[0]}")
+    if src.dtypes[0] == 'uint8':
+        # For RGB images (uint8), use 0 as nodata (black pixels)
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+    elif src.dtypes[0] == 'uint16':
+        # For uint16, use 0 as nodata
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+    elif src.dtypes[0] == 'int8':
+        # For int8, must use value within -128 to 127 range
+        nodata_value = -128
+        print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+    elif src.dtypes[0] == 'int16':
+        # For int16, -9999 is fine
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+    else:
+        # For float32, int32, etc., use -9999
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+        
+    return nodata_value
+
 
 def validate_COG(tmp_name):
     print(f"   [VALIDATE] Checking COG validity...")
@@ -46,9 +92,27 @@ def validate_COG(tmp_name):
             for error in validation_details['errors']:
                 print(f"      - {error}")
         if 'warnings' in validation_details:
-            for warning in validation_details['warnings']
+            for warning in validation_details['warnings']:
                 print(f"      - {warning}")
     return 
+
+def makedirs(name):
+    # Create necessary directories
+    os.makedirs("reproj", exist_ok=True)
+    
+    # Create data_download directory for caching
+    data_download_dir = "data_download"
+    os.makedirs(data_download_dir, exist_ok=True)
+    
+    # Create subdirectory structure to match S3 path
+    s3_path_parts = name.split('/')
+    local_subdir = os.path.join(data_download_dir, *s3_path_parts[:-1])
+    os.makedirs(local_subdir, exist_ok=True)
+
+    # Local path for the downloaded file (persistent storage)
+    local_download_path = os.path.join(data_download_dir, name)
+    
+    return data_download_dir, local_subdir, local_download_path
 
 def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, local_output_dir=None):
     """
@@ -183,7 +247,7 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
     print("✅ COG conversion function defined with smart nodata handling")
 
 
-def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client,
+def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, COG_PROFILE,
                                             local_output_dir=None, chunk_config=None):
     """
     Convert a file to Cloud Optimized GeoTIFF with proper CRS using chunked processing.
@@ -342,7 +406,7 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             # Update profile for COG
             profile = src.profile.copy()
             profile.update(COG_PROFILE)
-            profile['nodata'] = set_no_data_value(ds)
+            profile['nodata'] = set_no_data_value_src(src)
             
             with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
                 tmp_name = tmp.name
