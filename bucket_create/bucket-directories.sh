@@ -16,6 +16,7 @@ declare -a DIRECTORIES=(
     "ASTER"
     "MASTER"
     "ECOSTRESS"
+    "EOS"
     "Planet"
     "Maxar"
     "HLS"
@@ -28,6 +29,8 @@ declare -a DIRECTORIES=(
     "UAVSAR"
     "WB-57"
     "GoogleEarth"
+    "Unknown"
+    "Blackmarble"
 )
 
 
