@@ -27,7 +27,8 @@ def process_file_batch(
     event_name: str = None,
     save_metadata: bool = True,
     save_csv: bool = True,
-    verbose: bool = True
+    verbose: bool = True,
+    BUCKET: str = None,
 ) -> pd.DataFrame:
     """
     Process a batch of files with a custom processing function.
@@ -81,11 +82,13 @@ def process_file_batch(
             
             # Process the file
             processing_func(
-                name, 
+                name,
+                BUCKET,
                 cog_filename, 
                 cog_data_bucket, 
                 cog_data_prefix, 
-                local_output_dir
+                s3_client,
+                local_output_dir,
             )
             
             # Add to tracking DataFrame

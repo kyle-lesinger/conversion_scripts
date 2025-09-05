@@ -1,0 +1,428 @@
+#!/usr/bin/env python3
+import os
+import shutil
+import rasterio
+
+def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, local_output_dir=None):
+    """
+    Convert a file to Cloud Optimized GeoTIFF with proper CRS.
+    
+    This function includes:
+    - Download caching to avoid re-downloading files
+    - CRS reprojection to EPSG:4326
+    - COG validation before upload
+    - Upload to S3
+    - Smart nodata value handling based on data type
+    """
+    s3_key = f"{cog_data_prefix}/{cog_filename}"
+    reproject_filename = f"reproj/{cog_filename}"
+    
+    # Create necessary directories
+    os.makedirs("reproj", exist_ok=True)
+    
+    # Create data_download directory for caching
+    data_download_dir = "data_download"
+    os.makedirs(data_download_dir, exist_ok=True)
+    
+    # Create subdirectory structure to match S3 path
+    s3_path_parts = name.split('/')
+    local_subdir = os.path.join(data_download_dir, *s3_path_parts[:-1])
+    os.makedirs(local_subdir, exist_ok=True)
+    
+    # Local path for the downloaded file (persistent storage)
+    local_download_path = os.path.join(data_download_dir, name)
+    
+    # Temporary file for processing
+    temp_input_file = f"temp_{os.path.basename(name)}"
+
+    try:
+        # Check if file already exists locally
+        if os.path.exists(local_download_path):
+            print(f"   [CACHE HIT] Using cached file: {local_download_path}")
+            import shutil
+            shutil.copy(local_download_path, temp_input_file)
+        else:
+            # Download the file from S3
+            print(f"   [DOWNLOAD] Downloading from S3...")
+            s3_client.download_file(BUCKET, name, local_download_path)
+            print(f"   [DOWNLOAD] ✅ Saved to cache")
+            import shutil
+            shutil.copy(local_download_path, temp_input_file)
+        
+        # Reproject to EPSG:4326
+        print(f"   [REPROJECT] Converting to EPSG:4326...")
+        with rasterio.open(temp_input_file) as src:
+            dst_crs = "EPSG:4326"
+            
+            # Check if reprojection is needed
+            if src.crs and src.crs.to_string() == dst_crs:
+                print(f"   [REPROJECT] Already in {dst_crs}, skipping reprojection")
+                import shutil
+                shutil.copy(temp_input_file, reproject_filename)
+            else:
+                transform, width, height = calculate_default_transform(
+                    src.crs, dst_crs, src.width, src.height, *src.bounds
+                )
+                kwargs = src.meta.copy()
+                kwargs.update({
+                    "driver": "COG",
+                    "compress": "DEFLATE",
+                    "crs": dst_crs,
+                    "transform": transform,
+                    "width": width,
+                    "height": height
+                })
+
+                with rasterio.open(reproject_filename, "w", **kwargs) as dst:
+                    for band_idx in range(1, src.count + 1):
+                        reproject(
+                            source=rasterio.band(src, band_idx),
+                            destination=rasterio.band(dst, band_idx),
+                            src_transform=src.transform,
+                            src_crs=src.crs,
+                            dst_transform=transform,
+                            dst_crs=dst_crs,
+                            resampling=Resampling.nearest,
+                            wrapdateline=True
+                        )
+
+        # COGify & upload
+        print(f"   [COGIFY] Creating COG...")
+        ds = rxr.open_rasterio(reproject_filename)
+        
+        # Handle coordinate naming
+        if "y" in ds.dims and "x" in ds.dims:
+            ds = ds.rename({"y": "lat", "x": "lon"})
+            ds.rio.set_spatial_dims("lon", "lat", inplace=True)
+        
+        # Smart nodata value handling based on data type
+        print(f"   [NODATA] Data type: {ds.dtype}")
+        if ds.dtype == 'uint8':
+            # For RGB images (uint8), use 0 as nodata (black pixels)
+            nodata_value = 0
+            print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+        elif ds.dtype == 'uint16':
+            # For uint16, use 0 as nodata
+            nodata_value = 0
+            print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+        elif ds.dtype == 'int8':
+            # For int8, must use value within -128 to 127 range
+            nodata_value = -128
+            print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+        elif ds.dtype == 'int16':
+            # For int16, -9999 is fine
+            nodata_value = -9999
+            print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+        else:
+            # For float32, int32, etc., use -9999
+            nodata_value = -9999
+            print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+            
+        ds.rio.write_nodata(nodata_value, inplace=True)
+
+        with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+            tmp_name = tmp.name
+            ds.rio.to_raster(tmp_name, **COG_PROFILE)
+            
+            # Validate COG
+            print(f"   [VALIDATE] Checking COG validity...")
+            is_valid_cog, validation_details = validate_cog(tmp_name)
+            
+            if is_valid_cog:
+                print(f"   [VALIDATE] ✅ Valid COG")
+            else:
+                print(f"   [VALIDATE] ⚠️ COG validation warnings")
+                critical_errors = [e for e in validation_details['errors'] if 'Invalid driver' in e]
+                if critical_errors:
+                    raise ValueError(f"Critical COG validation failed")
+                if 'errors' in validation_details:
+                    for error in validation_details['errors']:
+                        print(f"      - {error}")
+                if 'warnings' in validation_details:
+                    for warning in validation_details['warnings']:
+                        print(f"      - {warning}")
+            
+            # Upload to S3
+            print(f"   [UPLOAD] Uploading to S3...")
+            s3_client.upload_file(
+                Filename=tmp_name,
+                Bucket=cog_data_bucket,
+                Key=s3_key
+            )
+            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+            
+            # Save locally if specified
+            if local_output_dir:
+                os.makedirs(local_output_dir, exist_ok=True)
+                local_path = os.path.join(local_output_dir, cog_filename)
+                import shutil
+                shutil.copy(tmp_name, local_path)
+            
+    except Exception as e:
+        print(f"   [ERROR] Failed: {str(e)}")
+        raise
+            
+    finally:
+        # Clean up temporary files
+        for temp_file in [temp_input_file, reproject_filename]:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        if 'tmp_name' in locals() and os.path.exists(tmp_name):
+            os.remove(tmp_name)
+
+    print("✅ COG conversion function defined with smart nodata handling")
+
+
+def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client,
+                                            local_output_dir=None, chunk_config=None):
+    """
+    Convert a file to Cloud Optimized GeoTIFF with proper CRS using chunked processing.
+    
+    This function includes:
+    - Chunked processing for memory efficiency
+    - Download caching to avoid re-downloading files
+    - CRS reprojection to EPSG:4326
+    - COG validation before upload
+    - Upload to S3
+    - Smart nodata value handling based on data type
+    - Memory monitoring and progress tracking
+    """
+    if chunk_config is None:
+        chunk_config = CHUNK_CONFIG
+    
+    s3_key = f"{cog_data_prefix}/{cog_filename}"
+    reproject_filename = f"reproj/{cog_filename}"
+
+    #Make directories
+    data_download_dir, local_subdir, local_download_path = makedirs(name)
+    
+    # Temporary file for processing
+    temp_input_file = f"temp_{os.path.basename(name)}"
+    
+    # Memory monitoring
+    if chunk_config.get('enable_memory_monitoring', True):
+        initial_memory = get_memory_usage()
+        print(f"   [MEMORY] Initial: {initial_memory:.1f} MB")
+
+    try:
+        import shutil
+        
+        # Check if file already exists locally
+        if os.path.exists(local_download_path):
+            print(f"   [CACHE HIT] Using cached file: {local_download_path}")
+            shutil.copy(local_download_path, temp_input_file)
+        else:
+            # Download the file from S3
+            print(f"   [DOWNLOAD] Downloading from S3...")
+            s3_client.download_file(BUCKET, name, local_download_path)
+            print(f"   [DOWNLOAD] ✅ Saved to cache")
+            shutil.copy(local_download_path, temp_input_file)
+        
+        # Open source file and get metadata
+        with rasterio.open(temp_input_file) as src:
+            dst_crs = "EPSG:4326"
+            chunk_size = chunk_config.get('default_chunk_size', 1024)
+            
+            # Check if reprojection is needed
+            if src.crs and src.crs.to_string() == dst_crs:
+                print(f"   [REPROJECT] Already in {dst_crs}, skipping reprojection")
+                import shutil
+                shutil.copy(temp_input_file, reproject_filename)
+            else:
+                print(f"   [REPROJECT] Converting to EPSG:4326 using chunked processing...")
+                
+                # Calculate transform for destination
+                transform, width, height = calculate_default_transform(
+                    src.crs, dst_crs, src.width, src.height, *src.bounds
+                )
+                
+                # Calculate optimal chunk size
+                chunk_size = calculate_optimal_chunk_size(
+                    width, height, src.count, src.dtypes[0],
+                    memory_limit_mb=chunk_config.get('memory_limit_mb', 500)
+                )
+                
+                # Prepare output kwargs
+                kwargs = src.meta.copy()
+                kwargs.update({
+                    "driver": "GTiff",  # Use GTiff for intermediate file
+                    "compress": "DEFLATE",
+                    "crs": dst_crs,
+                    "transform": transform,
+                    "width": width,
+                    "height": height,
+                    "tiled": True,
+                    "blockxsize": 512,
+                    "blockysize": 512
+                })
+                
+                # Create output file
+                with rasterio.open(reproject_filename, "w", **kwargs) as dst:
+                    # Calculate number of chunks
+                    n_chunks_x = (width + chunk_size - 1) // chunk_size
+                    n_chunks_y = (height + chunk_size - 1) // chunk_size
+                    total_chunks = n_chunks_x * n_chunks_y
+                    
+                    print(f"   [CHUNKS] Processing {total_chunks} chunks ({n_chunks_x}x{n_chunks_y})")
+                    
+                    # Process each band
+                    for band_idx in range(1, src.count + 1):
+                        print(f"   [BAND {band_idx}/{src.count}] Processing...")
+                        
+                        # Use tqdm for progress tracking if enabled
+                        if chunk_config.get('show_progress', True):
+                            chunk_iterator = tqdm(
+                                total=total_chunks,
+                                desc=f"Band {band_idx}",
+                                unit="chunks",
+                                leave=False
+                            )
+                        else:
+                            chunk_iterator = None
+                        
+                        # Process chunks
+                        for y in range(0, height, chunk_size):
+                            for x in range(0, width, chunk_size):
+                                # Define window for this chunk
+                                win_width = min(chunk_size, width - x)
+                                win_height = min(chunk_size, height - y)
+                                window = Window(x, y, win_width, win_height)
+                                
+                                # Create temporary arrays for chunk
+                                chunk_data = np.zeros((win_height, win_width), dtype=src.dtypes[0])
+                                
+                                # Reproject chunk
+                                reproject(
+                                    source=rasterio.band(src, band_idx),
+                                    destination=chunk_data,
+                                    src_transform=src.transform,
+                                    src_crs=src.crs,
+                                    dst_transform=transform * rasterio.windows.transform(window, transform),
+                                    dst_crs=dst_crs,
+                                    resampling=Resampling.nearest,
+                                    wrapdateline=True
+                                )
+                                
+                                # Write chunk to output
+                                dst.write(chunk_data, band_idx, window=window)
+                                
+                                # Update progress
+                                if chunk_iterator:
+                                    chunk_iterator.update(1)
+                                
+                                # Force garbage collection periodically
+                                if (y // chunk_size * n_chunks_x + x // chunk_size) % 10 == 0:
+                                    gc.collect()
+                                    
+                                    if chunk_config.get('enable_memory_monitoring', True):
+                                        current_memory = get_memory_usage()
+                                        if current_memory > initial_memory * 2:
+                                            print(f"\n   [MEMORY] High usage: {current_memory:.1f} MB, forcing cleanup...")
+                                            gc.collect()
+                        
+                        if chunk_iterator:
+                            chunk_iterator.close()
+        
+        # COGify & upload
+        print(f"   [COGIFY] Creating COG from reprojected file...")
+        
+        # Use rasterio to create COG
+        with rasterio.open(reproject_filename) as src:
+            # Smart nodata value handling based on data type
+            if ds.dtype == 'uint8':
+                # For RGB images (uint8), use 0 as nodata (black pixels)
+                nodata_value = 0
+                print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+            elif ds.dtype == 'uint16':
+                # For uint16, use 0 as nodata
+                nodata_value = 0
+                print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+            elif ds.dtype == 'int8':
+                # For int8, must use value within -128 to 127 range
+                nodata_value = -128
+                print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+            elif ds.dtype == 'int16':
+                # For int16, -9999 is fine
+                nodata_value = -9999
+                print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+            else:
+                # For float32, int32, etc., use -9999
+                nodata_value = -9999
+                print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+            
+            # Update profile for COG
+            profile = src.profile.copy()
+            profile.update(COG_PROFILE)
+            profile['nodata'] = nodata_value
+            
+            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                tmp_name = tmp.name
+                
+                # Write COG using chunked approach
+                with rasterio.open(tmp_name, 'w', **profile) as dst:
+                    # Process in chunks to avoid memory issues
+                    for band_idx in range(1, src.count + 1):
+                        for y in range(0, src.height, chunk_size):
+                            for x in range(0, src.width, chunk_size):
+                                win_width = min(chunk_size, src.width - x)
+                                win_height = min(chunk_size, src.height - y)
+                                window = Window(x, y, win_width, win_height)
+                                
+                                data = src.read(band_idx, window=window)
+                                dst.write(data, band_idx, window=window)
+                
+                # Validate COG
+                print(f"   [VALIDATE] Checking COG validity...")
+                is_valid_cog, validation_details = validate_cog(tmp_name)
+                
+                if is_valid_cog:
+                    print(f"   [VALIDATE] ✅ Valid COG")
+                else:
+                    print(f"   [VALIDATE] ⚠️ COG validation warnings")
+                    critical_errors = [e for e in validation_details.get('errors', []) if 'Invalid driver' in e]
+                    if critical_errors:
+                        raise ValueError(f"Critical COG validation failed")
+                    if 'errors' in validation_details:
+                        for error in validation_details['errors']:
+                            print(f"      - {error}")
+                    if 'warnings' in validation_details:
+                        for warning in validation_details['warnings']:
+                            print(f"      - {warning}")
+                
+                # Upload to S3
+                print(f"   [UPLOAD] Uploading to S3...")
+                s3_client.upload_file(
+                    Filename=tmp_name,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
+                )
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+                
+                # Save locally if specified
+                if local_output_dir:
+                    os.makedirs(local_output_dir, exist_ok=True)
+                    local_path = os.path.join(local_output_dir, cog_filename)
+                    import shutil
+                    shutil.copy(tmp_name, local_path)
+        
+        # Final memory report
+        if chunk_config.get('enable_memory_monitoring', True):
+            final_memory = get_memory_usage()
+            print(f"   [MEMORY] Final: {final_memory:.1f} MB (Change: {final_memory - initial_memory:+.1f} MB)")
+            
+    except Exception as e:
+        print(f"   [ERROR] Failed: {str(e)}")
+        raise
+            
+    finally:
+        # Clean up temporary files
+        for temp_file in [temp_input_file, reproject_filename]:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        if 'tmp_name' in locals() and os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        
+        # Force final garbage collection
+        gc.collect()
+
+    print("✅ Chunked COG conversion function defined with memory-efficient processing")
