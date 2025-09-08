@@ -17,7 +17,7 @@ def export_COG_PROFILE():
     COG_PROFILE = {
     "driver": "COG",
     "compress": "zstd",
-    "zstd_level": 22,  # Maximum compression level
+    "zstd_level": 9,  # Reasonable compression level (was 22)
     "bigtiff": "IF_SAFER",
     "num_threads": "ALL_CPUS"
     }

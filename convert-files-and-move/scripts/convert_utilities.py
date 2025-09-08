@@ -4,17 +4,20 @@ import shutil
 import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.windows import Window
+from rasterio.cog import cog_translate, cog_profiles
 import gc
 from tqdm import tqdm
 import numpy as np
 import tempfile
+import rioxarray as rxr
 
 
 # Import COG and cache utilities
 from cog_utilities import (
     check_cache_status,
     clear_cache,
-    validate_cog
+    validate_cog,
+    export_COG_PROFILE
 )
 
 
@@ -224,6 +227,9 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
         print(f"   [COGIFY] Creating COG...")
         ds = rxr.open_rasterio(reproject_filename)
         
+        # Get COG_PROFILE
+        COG_PROFILE = export_COG_PROFILE()
+        
         # Auto-detect and set predictor
         with rasterio.open(reproject_filename) as src:
             predictor = get_predictor_for_dtype(src.dtypes[0])
@@ -293,7 +299,13 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
     - Memory monitoring and progress tracking
     """
     if chunk_config is None:
-        chunk_config = CHUNK_CONFIG
+        # Default chunk configuration
+        chunk_config = {
+            "default_chunk_size": 1024,  # Default chunk size in pixels
+            "memory_limit_mb": 500,      # Memory limit per chunk in MB
+            "show_progress": True,       # Show progress bars
+            "enable_memory_monitoring": True  # Monitor memory usage
+        }
     
     s3_key = f"{cog_data_prefix}/{cog_filename}"
     reproject_filename = f"reproj/{cog_filename}"
@@ -434,20 +446,29 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
         # Use rasterio to create COG
         with rasterio.open(reproject_filename) as src:
             
-            # Update profile for COG
+            # First create a temporary regular GeoTIFF with chunked processing
             profile = src.profile.copy()
-            profile.update(COG_PROFILE)
+            profile.update({
+                'driver': 'GTiff',  # Regular GeoTIFF, not COG
+                'compress': 'DEFLATE',
+                'tiled': True,
+                'blockxsize': 512,
+                'blockysize': 512
+            })
             profile['nodata'] = set_no_data_value_src(src)
             
             # Auto-detect and set predictor based on data type
             predictor = get_predictor_for_dtype(src.dtypes[0])
             profile['predictor'] = predictor
             print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
-            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                tmp_name = tmp.name
+            
+            # Create temporary file for regular GeoTIFF
+            with tempfile.NamedTemporaryFile(suffix='_temp.tif', delete=False) as tmp_tiff:
+                temp_tiff_name = tmp_tiff.name
                 
-                # Write COG using chunked approach
-                with rasterio.open(tmp_name, 'w', **profile) as dst:
+                # Write regular GeoTIFF using chunked approach
+                print(f"   [WRITE] Writing temporary GeoTIFF with chunked processing...")
+                with rasterio.open(temp_tiff_name, 'w', **profile) as dst:
                     # Process in chunks to avoid memory issues
                     for band_idx in range(1, src.count + 1):
                         for y in range(0, src.height, chunk_size):
@@ -458,6 +479,30 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 
                                 data = src.read(band_idx, window=window)
                                 dst.write(data, band_idx, window=window)
+            
+            # Now convert the complete GeoTIFF to COG
+            print(f"   [CONVERT] Converting GeoTIFF to COG...")
+            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                tmp_name = tmp.name
+                
+                # Use cog_translate to create proper COG
+                cog_profile = cog_profiles.get('deflate')
+                cog_profile.update({
+                    'PREDICTOR': predictor,
+                    'COMPRESS': 'DEFLATE'
+                })
+                
+                cog_translate(
+                    temp_tiff_name,
+                    tmp_name,
+                    cog_profile,
+                    in_memory=False,  # Use False for large files
+                    quiet=False
+                )
+                
+            # Clean up temporary GeoTIFF
+            if os.path.exists(temp_tiff_name):
+                os.remove(temp_tiff_name)
                 
                 # Validate COG
                 validate_COG(tmp_name)
