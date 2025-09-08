@@ -32,7 +32,7 @@ def export_COG_PROFILE(compression_type="zstd"):
     if compression_type.lower() == "zstd":
         base_profile.update({
             "compress": "zstd",
-            "zstd_level": 9  # Reasonable compression level (1-22, higher = more compression)
+            "zstd_level": 22  # Reasonable compression level (1-22, higher = more compression)
         })
     elif compression_type.lower() == "lzw":
         base_profile.update({
@@ -42,7 +42,7 @@ def export_COG_PROFILE(compression_type="zstd"):
     elif compression_type.lower() == "deflate":
         base_profile.update({
             "compress": "DEFLATE",
-            "zlevel": 6  # Deflate compression level (1-9, default 6)
+            "zlevel": 9  # Deflate compression level (1-9, default 6)
         })
     elif compression_type.lower() == "none":
         # No compression
@@ -51,7 +51,7 @@ def export_COG_PROFILE(compression_type="zstd"):
         # Default to ZSTD if unknown type
         base_profile.update({
             "compress": "zstd",
-            "zstd_level": 9
+            "zstd_level": 22
         })
     
     return base_profile
