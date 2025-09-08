@@ -4,7 +4,6 @@ import shutil
 import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.windows import Window
-from rasterio.cog import cog_translate, cog_profiles
 import gc
 from tqdm import tqdm
 import numpy as np
@@ -450,7 +449,7 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             profile = src.profile.copy()
             profile.update({
                 'driver': 'GTiff',  # Regular GeoTIFF, not COG
-                'compress': 'DEFLATE',
+                'compress': 'DEFLATE',  # Use DEFLATE for temp file (ZSTD may not work well with windowed writes)
                 'tiled': True,
                 'blockxsize': 512,
                 'blockysize': 512
@@ -485,20 +484,28 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
                 tmp_name = tmp.name
                 
-                # Use cog_translate to create proper COG
-                cog_profile = cog_profiles.get('deflate')
-                cog_profile.update({
-                    'PREDICTOR': predictor,
-                    'COMPRESS': 'DEFLATE'
-                })
-                
-                cog_translate(
-                    temp_tiff_name,
-                    tmp_name,
-                    cog_profile,
-                    in_memory=False,  # Use False for large files
-                    quiet=False
-                )
+                # Read the temporary GeoTIFF and write as COG
+                with rasterio.open(temp_tiff_name) as src_temp:
+                    # Get the COG profile from config
+                    COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
+                    
+                    # Create COG profile
+                    cog_profile = src_temp.profile.copy()
+                    cog_profile.update(COG_PROFILE_CONFIG)
+                    cog_profile.update({
+                        'predictor': predictor,
+                        'tiled': True,
+                        'blockxsize': 512,
+                        'blockysize': 512
+                    })
+                    
+                    # Write COG with all data at once
+                    print(f"   [WRITE] Writing final COG...")
+                    with rasterio.open(tmp_name, 'w', **cog_profile) as dst_cog:
+                        # Write all bands at once
+                        for band_idx in range(1, src_temp.count + 1):
+                            data = src_temp.read(band_idx)
+                            dst_cog.write(data, band_idx)
                 
             # Clean up temporary GeoTIFF
             if os.path.exists(temp_tiff_name):
