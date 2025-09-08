@@ -13,15 +13,48 @@ import shutil
 from typing import Tuple, Dict, List, Optional
 
 
-def export_COG_PROFILE():
-    COG_PROFILE = {
-    "driver": "COG",
-    "compress": "zstd",
-    "zstd_level": 9,  # Reasonable compression level (was 22)
-    "bigtiff": "IF_SAFER",
-    "num_threads": "ALL_CPUS"
+def export_COG_PROFILE(compression_type="zstd"):
+    """
+    Export COG profile with specified compression type.
+    
+    Args:
+        compression_type: One of "zstd", "lzw", "deflate", "none"
+        
+    Returns:
+        Dictionary with COG profile settings
+    """
+    base_profile = {
+        "driver": "COG",
+        "bigtiff": "IF_SAFER",
+        "num_threads": "ALL_CPUS"
     }
-    return COG_PROFILE
+    
+    if compression_type.lower() == "zstd":
+        base_profile.update({
+            "compress": "zstd",
+            "zstd_level": 9  # Reasonable compression level (1-22, higher = more compression)
+        })
+    elif compression_type.lower() == "lzw":
+        base_profile.update({
+            "compress": "LZW"
+            # LZW doesn't have compression levels
+        })
+    elif compression_type.lower() == "deflate":
+        base_profile.update({
+            "compress": "DEFLATE",
+            "zlevel": 6  # Deflate compression level (1-9, default 6)
+        })
+    elif compression_type.lower() == "none":
+        # No compression
+        pass
+    else:
+        # Default to ZSTD if unknown type
+        base_profile.update({
+            "compress": "zstd",
+            "zstd_level": 9
+        })
+    
+    return base_profile
 
 
 

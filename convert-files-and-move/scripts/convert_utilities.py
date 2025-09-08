@@ -224,30 +224,77 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
 
         # COGify & upload
         print(f"   [COGIFY] Creating COG...")
-        ds = rxr.open_rasterio(reproject_filename)
         
-        # Get COG_PROFILE
-        COG_PROFILE = export_COG_PROFILE()
+        # Try using rio-cogeo first for better compatibility
+        try:
+            from rio_cogeo.cogeo import cog_translate
+            from rio_cogeo.profiles import cog_profiles
+            
+            print(f"   [COGIFY] Using rio-cogeo for conversion...")
+            
+            # Get COG_PROFILE and predictor
+            COG_PROFILE = export_COG_PROFILE()
+            with rasterio.open(reproject_filename) as src:
+                predictor = get_predictor_for_dtype(src.dtypes[0])
+                print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
+            
+            # Get compression type
+            compress_type = COG_PROFILE.get('compress', 'DEFLATE').lower()
+            
+            # Create appropriate profile
+            if compress_type == 'zstd':
+                dst_profile = {
+                    'driver': 'COG',
+                    'compress': 'zstd',
+                    'zstd_level': COG_PROFILE.get('zstd_level', 9),
+                    'predictor': predictor
+                }
+            elif compress_type == 'lzw':
+                dst_profile = cog_profiles.get('lzw')
+                dst_profile['predictor'] = predictor
+            else:
+                dst_profile = cog_profiles.get('deflate')
+                dst_profile['predictor'] = predictor
+            
+            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                tmp_name = tmp.name
+                # Use rio-cogeo translate
+                cog_translate(
+                    reproject_filename,
+                    tmp_name,
+                    dst_profile,
+                    use_cog_driver=True,
+                    in_memory=False,
+                    quiet=False
+                )
+                
+        except ImportError:
+            # Fallback to rioxarray method
+            print(f"   [COGIFY] rio-cogeo not available, using rioxarray...")
+            ds = rxr.open_rasterio(reproject_filename)
+            
+            # Get COG_PROFILE
+            COG_PROFILE = export_COG_PROFILE()
+            
+            # Auto-detect and set predictor
+            with rasterio.open(reproject_filename) as src:
+                predictor = get_predictor_for_dtype(src.dtypes[0])
+                # Update COG_PROFILE with predictor
+                cog_profile_with_predictor = COG_PROFILE.copy()
+                cog_profile_with_predictor['predictor'] = predictor
+                print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
         
-        # Auto-detect and set predictor
-        with rasterio.open(reproject_filename) as src:
-            predictor = get_predictor_for_dtype(src.dtypes[0])
-            # Update COG_PROFILE with predictor
-            cog_profile_with_predictor = COG_PROFILE.copy()
-            cog_profile_with_predictor['predictor'] = predictor
-            print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
-    
-        # Handle coordinate naming
-        if "y" in ds.dims and "x" in ds.dims:
-            ds = ds.rename({"y": "lat", "x": "lon"})
-            ds.rio.set_spatial_dims("lon", "lat", inplace=True)
-        
-        #Smart nodata handling
-        ds.rio.write_nodata(set_no_data_value(ds), inplace=True)
+            # Handle coordinate naming
+            if "y" in ds.dims and "x" in ds.dims:
+                ds = ds.rename({"y": "lat", "x": "lon"})
+                ds.rio.set_spatial_dims("lon", "lat", inplace=True)
+            
+            #Smart nodata handling
+            ds.rio.write_nodata(set_no_data_value(ds), inplace=True)
 
-        with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-            tmp_name = tmp.name
-            ds.rio.to_raster(tmp_name, **cog_profile_with_predictor)
+            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                tmp_name = tmp.name
+                ds.rio.to_raster(tmp_name, **cog_profile_with_predictor)
             
             # Validate COG
             validate_COG(tmp_name)
@@ -439,6 +486,19 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                         if chunk_iterator:
                             chunk_iterator.close()
         
+        # Verify reprojected data
+        print(f"   [VERIFY] Checking reprojected data...")
+        with rasterio.open(reproject_filename) as verify_src:
+            for band_idx in range(1, verify_src.count + 1):
+                # Read a sample to check if data exists
+                sample_window = Window(0, 0, min(1000, verify_src.width), min(1000, verify_src.height))
+                sample_data = verify_src.read(band_idx, window=sample_window)
+                data_min, data_max = sample_data.min(), sample_data.max()
+                non_zero_count = np.count_nonzero(sample_data)
+                print(f"   [VERIFY] Band {band_idx}: min={data_min}, max={data_max}, non-zero pixels={non_zero_count}/{sample_data.size}")
+                if non_zero_count == 0:
+                    print(f"   [WARNING] Band {band_idx} has no non-zero data after reprojection!")
+        
         # COGify & upload
         print(f"   [COGIFY] Creating COG from reprojected file...")
         
@@ -449,7 +509,7 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             profile = src.profile.copy()
             profile.update({
                 'driver': 'GTiff',  # Regular GeoTIFF, not COG
-                'compress': 'DEFLATE',  # Use DEFLATE for temp file (ZSTD may not work well with windowed writes)
+                'compress': 'NONE',  # No compression for temp file to preserve data integrity
                 'tiled': True,
                 'blockxsize': 512,
                 'blockysize': 512
@@ -479,33 +539,81 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 data = src.read(band_idx, window=window)
                                 dst.write(data, band_idx, window=window)
             
-            # Now convert the complete GeoTIFF to COG
+            # Now convert the complete GeoTIFF to COG using rio-cogeo for better compatibility
             print(f"   [CONVERT] Converting GeoTIFF to COG...")
-            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                tmp_name = tmp.name
+            
+            # Check if rio-cogeo is available, otherwise use direct method
+            try:
+                from rio_cogeo.cogeo import cog_translate
+                from rio_cogeo.profiles import cog_profiles
                 
-                # Read the temporary GeoTIFF and write as COG
-                with rasterio.open(temp_tiff_name) as src_temp:
-                    # Get the COG profile from config
+                # Use rio-cogeo for conversion (more reliable with compression)
+                print(f"   [CONVERT] Using rio-cogeo for conversion...")
+                with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                    tmp_name = tmp.name
+                    
+                    # Get compression settings from COG_PROFILE
                     COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
+                    compress_type = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').lower()
                     
-                    # Create COG profile
-                    cog_profile = src_temp.profile.copy()
-                    cog_profile.update(COG_PROFILE_CONFIG)
-                    cog_profile.update({
-                        'predictor': predictor,
-                        'tiled': True,
-                        'blockxsize': 512,
-                        'blockysize': 512
-                    })
+                    # Select appropriate profile
+                    if compress_type == 'zstd':
+                        # Use custom profile for ZSTD
+                        dst_profile = {
+                            'driver': 'COG',
+                            'compress': 'zstd',
+                            'zstd_level': COG_PROFILE_CONFIG.get('zstd_level', 9),
+                            'predictor': predictor
+                        }
+                    elif compress_type == 'lzw':
+                        dst_profile = cog_profiles.get('lzw')
+                        dst_profile['predictor'] = predictor
+                    else:
+                        dst_profile = cog_profiles.get('deflate')
+                        dst_profile['predictor'] = predictor
                     
-                    # Write COG with all data at once
-                    print(f"   [WRITE] Writing final COG...")
-                    with rasterio.open(tmp_name, 'w', **cog_profile) as dst_cog:
-                        # Write all bands at once
-                        for band_idx in range(1, src_temp.count + 1):
-                            data = src_temp.read(band_idx)
-                            dst_cog.write(data, band_idx)
+                    # Translate to COG
+                    cog_translate(
+                        temp_tiff_name,
+                        tmp_name,
+                        dst_profile,
+                        use_cog_driver=True,  # Use GDAL COG driver if available
+                        in_memory=False,
+                        quiet=False
+                    )
+                    
+            except ImportError:
+                # Fallback to direct COG writing if rio-cogeo not available
+                print(f"   [CONVERT] rio-cogeo not available, using direct COG writing...")
+                with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                    tmp_name = tmp.name
+                    
+                    # Read the temporary GeoTIFF and write as COG
+                    with rasterio.open(temp_tiff_name) as src_temp:
+                        # Get the COG profile from config
+                        COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
+                        
+                        # Create COG profile
+                        cog_profile = src_temp.profile.copy()
+                        cog_profile.update(COG_PROFILE_CONFIG)
+                        cog_profile.update({
+                            'predictor': predictor,
+                            'tiled': True,
+                            'blockxsize': 512,
+                            'blockysize': 512,
+                            'nodata': src_temp.nodata  # Preserve nodata value from source
+                        })
+                        
+                        # Write COG with all data at once
+                        print(f"   [WRITE] Writing final COG...")
+                        with rasterio.open(tmp_name, 'w', **cog_profile) as dst_cog:
+                            # Write all bands at once
+                            for band_idx in range(1, src_temp.count + 1):
+                                data = src_temp.read(band_idx)
+                                # Verify data before writing
+                                if np.all(data == 0) or (src_temp.nodata is not None and np.all(data == src_temp.nodata)):
+                                    print(f"   [WARNING] Band {band_idx} appears to be all nodata/zeros!")
+                                dst_cog.write(data, band_idx)
                 
             # Clean up temporary GeoTIFF
             if os.path.exists(temp_tiff_name):
