@@ -96,6 +96,29 @@ def validate_COG(tmp_name):
                 print(f"      - {warning}")
     return 
 
+
+def get_predictor_for_dtype(dtype):
+    """
+    Determine the appropriate predictor based on data type.
+    
+    Args:
+        dtype: numpy dtype or string representation of dtype
+    
+    Returns:
+        int: Predictor value (1, 2, or 3)
+    """
+    dtype_str = str(dtype)
+    
+    # Integer types use predictor 2
+    if dtype_str in ['uint8', 'uint16', 'uint32', 'int8', 'int16', 'int32']:
+        return 2
+    # Floating-point types use predictor 3
+    elif dtype_str in ['float32', 'float64']:
+        return 3
+    # Default to no predictor
+    else:
+        return 1
+
 def makedirs(name):
     # Create necessary directories
     os.makedirs("reproj", exist_ok=True)
@@ -201,6 +224,14 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
         print(f"   [COGIFY] Creating COG...")
         ds = rxr.open_rasterio(reproject_filename)
         
+        # Auto-detect and set predictor
+        with rasterio.open(reproject_filename) as src:
+            predictor = get_predictor_for_dtype(src.dtypes[0])
+            # Update COG_PROFILE with predictor
+            cog_profile_with_predictor = COG_PROFILE.copy()
+            cog_profile_with_predictor['predictor'] = predictor
+            print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
+    
         # Handle coordinate naming
         if "y" in ds.dims and "x" in ds.dims:
             ds = ds.rename({"y": "lat", "x": "lon"})
@@ -211,7 +242,7 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
 
         with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
             tmp_name = tmp.name
-            ds.rio.to_raster(tmp_name, **COG_PROFILE)
+            ds.rio.to_raster(tmp_name, **cog_profile_with_predictor)
             
             # Validate COG
             validate_COG(tmp_name)
@@ -408,6 +439,10 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             profile.update(COG_PROFILE)
             profile['nodata'] = set_no_data_value_src(src)
             
+            # Auto-detect and set predictor based on data type
+            predictor = get_predictor_for_dtype(src.dtypes[0])
+            profile['predictor'] = predictor
+            print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
             with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
                 tmp_name = tmp.name
                 

@@ -13,6 +13,18 @@ import shutil
 from typing import Tuple, Dict, List, Optional
 
 
+def export_COG_PROFILE():
+    COG_PROFILE = {
+    "driver": "COG",
+    "compress": "zstd",
+    "zstd_level": 22,  # Maximum compression level
+    "bigtiff": "IF_SAFER",
+    "num_threads": "ALL_CPUS"
+    }
+    return COG_PROFILE
+
+
+
 def check_cache_status(data_download_dir: str = "data_download") -> Tuple[int, int]:
     """
     Check the status of the download cache.
