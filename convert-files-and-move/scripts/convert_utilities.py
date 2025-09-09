@@ -405,6 +405,19 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                     memory_limit_mb=chunk_config.get('memory_limit_mb', 500)
                 )
                 
+                # Get nodata value from source or determine based on dtype
+                src_nodata = src.nodata if src.nodata is not None else set_no_data_value_src(src)
+                
+                # Special handling for RGB files with nodata=0
+                # RGB files shouldn't use 0 as nodata since black is a valid color
+                if src.count == 3 and src_nodata == 0 and src.dtypes[0] == 'uint8':
+                    print(f"   [NODATA] RGB file detected with nodata=0, treating as regular RGB without nodata")
+                    src_nodata = None
+                    kwargs_nodata = None
+                else:
+                    print(f"   [NODATA] Source nodata value: {src_nodata}")
+                    kwargs_nodata = src_nodata
+                
                 # Prepare output kwargs
                 kwargs = src.meta.copy()
                 kwargs.update({
@@ -416,7 +429,8 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                     "height": height,
                     "tiled": True,
                     "blockxsize": 512,
-                    "blockysize": 512
+                    "blockysize": 512,
+                    "nodata": kwargs_nodata  # Use the adjusted nodata value
                 })
                 
                 # Create output file
@@ -452,19 +466,39 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 window = Window(x, y, win_width, win_height)
                                 
                                 # Create temporary arrays for chunk
-                                chunk_data = np.zeros((win_height, win_width), dtype=src.dtypes[0])
+                                # Initialize with nodata value to properly handle empty areas
+                                if src_nodata is not None:
+                                    chunk_data = np.full((win_height, win_width), src_nodata, dtype=src.dtypes[0])
+                                else:
+                                    chunk_data = np.zeros((win_height, win_width), dtype=src.dtypes[0])
                                 
                                 # Reproject chunk
-                                reproject(
-                                    source=rasterio.band(src, band_idx),
-                                    destination=chunk_data,
-                                    src_transform=src.transform,
-                                    src_crs=src.crs,
-                                    dst_transform=transform * rasterio.windows.transform(window, transform),
-                                    dst_crs=dst_crs,
-                                    resampling=Resampling.nearest,
-                                    wrapdateline=True
-                                )
+                                reproject_kwargs = {
+                                    'source': rasterio.band(src, band_idx),
+                                    'destination': chunk_data,
+                                    'src_transform': src.transform,
+                                    'src_crs': src.crs,
+                                    'dst_transform': rasterio.windows.transform(window, transform),
+                                    'dst_crs': dst_crs,
+                                    'resampling': Resampling.nearest,
+                                    'wrapdateline': True
+                                }
+                                
+                                # Only add nodata parameters if we have a nodata value
+                                if src_nodata is not None:
+                                    reproject_kwargs['src_nodata'] = src_nodata
+                                    reproject_kwargs['dst_nodata'] = src_nodata
+                                
+                                reproject(**reproject_kwargs)
+                                
+                                # Verify chunk has data before writing
+                                if src_nodata is not None:
+                                    non_nodata_count = np.count_nonzero(chunk_data != src_nodata)
+                                else:
+                                    non_nodata_count = np.count_nonzero(chunk_data)
+                                    
+                                if non_nodata_count > 0 and chunk_config.get('debug_chunks', False):
+                                    print(f"     [CHUNK] Band {band_idx}, Window({x},{y},{win_width},{win_height}): {non_nodata_count} non-nodata pixels")
                                 
                                 # Write chunk to output
                                 dst.write(chunk_data, band_idx, window=window)
@@ -489,15 +523,63 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
         # Verify reprojected data
         print(f"   [VERIFY] Checking reprojected data...")
         with rasterio.open(reproject_filename) as verify_src:
+            verify_nodata = verify_src.nodata
+            if verify_nodata is None and src.count == 3 and src.dtypes[0] == 'uint8':
+                print(f"   [VERIFY] RGB file without nodata - all pixel values are valid")
+            
             for band_idx in range(1, verify_src.count + 1):
-                # Read a sample to check if data exists
-                sample_window = Window(0, 0, min(1000, verify_src.width), min(1000, verify_src.height))
+                # For large images, sample from center where data is more likely to exist
+                # The edges often have nodata in reprojected images
+                center_x = verify_src.width // 2
+                center_y = verify_src.height // 2
+                sample_size = min(1000, verify_src.width, verify_src.height)
+                
+                # Create a centered window
+                x_start = max(0, center_x - sample_size // 2)
+                y_start = max(0, center_y - sample_size // 2)
+                sample_window = Window(x_start, y_start, sample_size, sample_size)
+                
                 sample_data = verify_src.read(band_idx, window=sample_window)
                 data_min, data_max = sample_data.min(), sample_data.max()
-                non_zero_count = np.count_nonzero(sample_data)
-                print(f"   [VERIFY] Band {band_idx}: min={data_min}, max={data_max}, non-zero pixels={non_zero_count}/{sample_data.size}")
-                if non_zero_count == 0:
-                    print(f"   [WARNING] Band {band_idx} has no non-zero data after reprojection!")
+                
+                # Also get overall band statistics by sampling
+                # Sample 10 smaller windows across the image
+                total_non_zero = 0
+                total_sampled = 0
+                sample_locations = [
+                    (verify_src.width * 0.25, verify_src.height * 0.25),
+                    (verify_src.width * 0.75, verify_src.height * 0.25),
+                    (verify_src.width * 0.25, verify_src.height * 0.75),
+                    (verify_src.width * 0.75, verify_src.height * 0.75),
+                    (verify_src.width * 0.5, verify_src.height * 0.5),
+                ]
+                
+                for sx, sy in sample_locations:
+                    try:
+                        small_win = Window(int(sx)-50, int(sy)-50, 100, 100)
+                        small_data = verify_src.read(band_idx, window=small_win)
+                        if verify_nodata is not None:
+                            total_non_zero += np.count_nonzero(small_data != verify_nodata)
+                        else:
+                            total_non_zero += np.count_nonzero(small_data)
+                        total_sampled += small_data.size
+                    except:
+                        pass
+                
+                # Report both center sample and distributed samples
+                if verify_nodata is not None:
+                    non_zero_count = np.count_nonzero(sample_data != verify_nodata)
+                else:
+                    non_zero_count = np.count_nonzero(sample_data)
+                
+                print(f"   [VERIFY] Band {band_idx}: min={data_min}, max={data_max}, center sample non-zero={non_zero_count}/{sample_data.size}")
+                
+                if total_sampled > 0:
+                    estimated_percent = (total_non_zero / total_sampled) * 100
+                    print(f"            Estimated data coverage: {estimated_percent:.1f}% (from distributed samples)")
+                
+                if non_zero_count == 0 and total_non_zero == 0:
+                    print(f"   [WARNING] Band {band_idx} appears to have no data after reprojection!")
         
         # COGify & upload
         print(f"   [COGIFY] Creating COG from reprojected file...")
