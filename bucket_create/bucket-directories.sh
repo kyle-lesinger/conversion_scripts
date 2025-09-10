@@ -10,7 +10,11 @@ PREFIX="drcs_activations_new"
 declare -a DIRECTORIES=(
     "Sentinel-1"
     "Sentinel-2"
+<<<<<<< Updated upstream
     "Sentinel-1_2"
+=======
+    "Sentinel-5P"
+>>>>>>> Stashed changes
     "Landsat"
     "MODIS"
     "VIIRS"

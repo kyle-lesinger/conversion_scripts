@@ -405,6 +405,19 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                     memory_limit_mb=chunk_config.get('memory_limit_mb', 500)
                 )
                 
+                # Get nodata value from source or determine based on dtype
+                src_nodata = src.nodata if src.nodata is not None else set_no_data_value_src(src)
+                
+                # Special handling for RGB files with nodata=0
+                # RGB files shouldn't use 0 as nodata since black is a valid color
+                if src.count == 3 and src_nodata == 0 and src.dtypes[0] == 'uint8':
+                    print(f"   [NODATA] RGB file detected with nodata=0, treating as regular RGB without nodata")
+                    src_nodata = None
+                    kwargs_nodata = None
+                else:
+                    print(f"   [NODATA] Source nodata value: {src_nodata}")
+                    kwargs_nodata = src_nodata
+                
                 # Prepare output kwargs
                 kwargs = src.meta.copy()
                 kwargs.update({
@@ -416,7 +429,8 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                     "height": height,
                     "tiled": True,
                     "blockxsize": 512,
-                    "blockysize": 512
+                    "blockysize": 512,
+                    "nodata": kwargs_nodata  # Use the adjusted nodata value
                 })
                 
                 # Create output file
@@ -452,19 +466,39 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 window = Window(x, y, win_width, win_height)
                                 
                                 # Create temporary arrays for chunk
-                                chunk_data = np.zeros((win_height, win_width), dtype=src.dtypes[0])
+                                # Initialize with nodata value to properly handle empty areas
+                                if src_nodata is not None:
+                                    chunk_data = np.full((win_height, win_width), src_nodata, dtype=src.dtypes[0])
+                                else:
+                                    chunk_data = np.zeros((win_height, win_width), dtype=src.dtypes[0])
                                 
                                 # Reproject chunk
-                                reproject(
-                                    source=rasterio.band(src, band_idx),
-                                    destination=chunk_data,
-                                    src_transform=src.transform,
-                                    src_crs=src.crs,
-                                    dst_transform=transform * rasterio.windows.transform(window, transform),
-                                    dst_crs=dst_crs,
-                                    resampling=Resampling.nearest,
-                                    wrapdateline=True
-                                )
+                                reproject_kwargs = {
+                                    'source': rasterio.band(src, band_idx),
+                                    'destination': chunk_data,
+                                    'src_transform': src.transform,
+                                    'src_crs': src.crs,
+                                    'dst_transform': rasterio.windows.transform(window, transform),
+                                    'dst_crs': dst_crs,
+                                    'resampling': Resampling.nearest,
+                                    'wrapdateline': True
+                                }
+                                
+                                # Only add nodata parameters if we have a nodata value
+                                if src_nodata is not None:
+                                    reproject_kwargs['src_nodata'] = src_nodata
+                                    reproject_kwargs['dst_nodata'] = src_nodata
+                                
+                                reproject(**reproject_kwargs)
+                                
+                                # Verify chunk has data before writing
+                                if src_nodata is not None:
+                                    non_nodata_count = np.count_nonzero(chunk_data != src_nodata)
+                                else:
+                                    non_nodata_count = np.count_nonzero(chunk_data)
+                                    
+                                if non_nodata_count > 0 and chunk_config.get('debug_chunks', False):
+                                    print(f"     [CHUNK] Band {band_idx}, Window({x},{y},{win_width},{win_height}): {non_nodata_count} non-nodata pixels")
                                 
                                 # Write chunk to output
                                 dst.write(chunk_data, band_idx, window=window)
@@ -489,15 +523,63 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
         # Verify reprojected data
         print(f"   [VERIFY] Checking reprojected data...")
         with rasterio.open(reproject_filename) as verify_src:
+            verify_nodata = verify_src.nodata
+            if verify_nodata is None and src.count == 3 and src.dtypes[0] == 'uint8':
+                print(f"   [VERIFY] RGB file without nodata - all pixel values are valid")
+            
             for band_idx in range(1, verify_src.count + 1):
-                # Read a sample to check if data exists
-                sample_window = Window(0, 0, min(1000, verify_src.width), min(1000, verify_src.height))
+                # For large images, sample from center where data is more likely to exist
+                # The edges often have nodata in reprojected images
+                center_x = verify_src.width // 2
+                center_y = verify_src.height // 2
+                sample_size = min(1000, verify_src.width, verify_src.height)
+                
+                # Create a centered window
+                x_start = max(0, center_x - sample_size // 2)
+                y_start = max(0, center_y - sample_size // 2)
+                sample_window = Window(x_start, y_start, sample_size, sample_size)
+                
                 sample_data = verify_src.read(band_idx, window=sample_window)
                 data_min, data_max = sample_data.min(), sample_data.max()
-                non_zero_count = np.count_nonzero(sample_data)
-                print(f"   [VERIFY] Band {band_idx}: min={data_min}, max={data_max}, non-zero pixels={non_zero_count}/{sample_data.size}")
-                if non_zero_count == 0:
-                    print(f"   [WARNING] Band {band_idx} has no non-zero data after reprojection!")
+                
+                # Also get overall band statistics by sampling
+                # Sample 10 smaller windows across the image
+                total_non_zero = 0
+                total_sampled = 0
+                sample_locations = [
+                    (verify_src.width * 0.25, verify_src.height * 0.25),
+                    (verify_src.width * 0.75, verify_src.height * 0.25),
+                    (verify_src.width * 0.25, verify_src.height * 0.75),
+                    (verify_src.width * 0.75, verify_src.height * 0.75),
+                    (verify_src.width * 0.5, verify_src.height * 0.5),
+                ]
+                
+                for sx, sy in sample_locations:
+                    try:
+                        small_win = Window(int(sx)-50, int(sy)-50, 100, 100)
+                        small_data = verify_src.read(band_idx, window=small_win)
+                        if verify_nodata is not None:
+                            total_non_zero += np.count_nonzero(small_data != verify_nodata)
+                        else:
+                            total_non_zero += np.count_nonzero(small_data)
+                        total_sampled += small_data.size
+                    except:
+                        pass
+                
+                # Report both center sample and distributed samples
+                if verify_nodata is not None:
+                    non_zero_count = np.count_nonzero(sample_data != verify_nodata)
+                else:
+                    non_zero_count = np.count_nonzero(sample_data)
+                
+                print(f"   [VERIFY] Band {band_idx}: min={data_min}, max={data_max}, center sample non-zero={non_zero_count}/{sample_data.size}")
+                
+                if total_sampled > 0:
+                    estimated_percent = (total_non_zero / total_sampled) * 100
+                    print(f"            Estimated data coverage: {estimated_percent:.1f}% (from distributed samples)")
+                
+                if non_zero_count == 0 and total_non_zero == 0:
+                    print(f"   [WARNING] Band {band_idx} appears to have no data after reprojection!")
         
         # COGify & upload
         print(f"   [COGIFY] Creating COG from reprojected file...")
@@ -665,3 +747,243 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
         gc.collect()
 
     print("✅ Chunked COG conversion function defined with memory-efficient processing")
+
+
+def convert_to_proper_CRS_and_cogify_ultra_large(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, COG_PROFILE,
+                                            local_output_dir=None, chunk_config=None):
+    """
+    Convert ultra-large files to Cloud Optimized GeoTIFF using GDAL's streaming capabilities.
+    
+    Optimized for files that are too large to fit in memory (10GB+).
+    Uses GDAL command-line tools for efficient processing without loading data into Python memory.
+    """
+    import subprocess
+    import tempfile
+    import os
+    from pathlib import Path
+    
+    if chunk_config is None:
+        chunk_config = {
+            "use_vsi": True,  # Use GDAL's virtual file system
+            "gdal_cache_mb": 8192,  # 8GB GDAL cache
+            "num_threads": "ALL_CPUS",
+            "enable_memory_monitoring": True
+        }
+    
+    s3_key = f"{cog_data_prefix}/{cog_filename}"
+    reproject_filename = f"reproj/{cog_filename}"
+
+    if hasattr(s3_client._client_config.credentials, 'token'):
+        os.environ['AWS_SESSION_TOKEN'] = s3_client._client_config.credentials.token
+    
+    # Memory monitoring
+    if chunk_config.get('enable_memory_monitoring', True):
+        initial_memory = get_memory_usage()
+        print(f"   [MEMORY] Initial: {initial_memory:.1f} MB")
+    
+    try:
+        # Use GDAL VSI for S3 access
+        if chunk_config.get('use_vsi', True):
+            # Direct S3 access without downloading
+            input_path = f"/vsis3/{BUCKET}/{name}"
+            print(f"   [VSI] Using GDAL virtual file system for S3 access")
+        else:
+            # Fallback to download if VSI fails
+            data_download_dir, local_subdir, local_download_path = makedirs(name)
+            if os.path.exists(local_download_path):
+                print(f"   [CACHE HIT] Using cached file: {local_download_path}")
+                input_path = local_download_path
+            else:
+                print(f"   [DOWNLOAD] Downloading from S3...")
+                s3_client.download_file(BUCKET, name, local_download_path)
+                input_path = local_download_path
+        
+        # Check source file info using gdalinfo
+        print(f"   [INFO] Getting source file information...")
+        info_cmd = ["gdalinfo", "-json", input_path]
+        info_result = subprocess.run(info_cmd, capture_output=True, text=True)
+        
+        if info_result.returncode != 0:
+            raise Exception(f"Failed to read file info: {info_result.stderr}")
+        
+        import json
+        file_info = json.loads(info_result.stdout)
+        src_crs = file_info.get('coordinateSystem', {}).get('wkt', '')
+        
+        # Create temporary output file
+        with tempfile.NamedTemporaryFile(suffix='_cog.tif', delete=False) as tmp:
+            output_path = tmp.name
+        
+        # Build GDAL command for COG creation with reprojection
+        print(f"   [PROCESS] Converting to COG with EPSG:4326...")
+        
+        # Determine compression settings
+        COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
+        compress = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').upper()
+        
+        # Build gdal_translate command
+        cmd = [
+            "gdal_translate",
+            "-of", "COG",
+            "-co", f"COMPRESS={compress}",
+            "-co", "BIGTIFF=YES",  # Essential for large files
+            "-co", "BLOCKSIZE=512",  # Good for cloud storage
+            "-co", "OVERVIEWS=IGNORE_EXISTING",  # Don't rebuild if they exist
+            "-co", f"NUM_THREADS={chunk_config.get('num_threads', 'ALL_CPUS')}",
+            "-co", "SPARSE_OK=TRUE",  # Handle sparse data efficiently
+            "--config", "GDAL_CACHEMAX", str(chunk_config.get('gdal_cache_mb', 8192)),
+            "--config", "GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR",
+            "--config", "CPL_VSIL_CURL_CHUNK_SIZE", "10485760",  # 10MB chunks for S3
+            "--config", "GDAL_HTTP_MULTIPLEX", "YES",
+            "--config", "GDAL_HTTP_VERSION", "2",
+        ]
+        
+        # Add compression-specific options
+        if compress == "ZSTD":
+            cmd.extend(["-co", f"ZSTD_LEVEL={COG_PROFILE_CONFIG.get('zstd_level', 9)}"])
+        
+        # Add predictor based on data type (check from file info)
+        if 'bands' in file_info and file_info['bands']:
+            dtype = file_info['bands'][0].get('type', 'Byte')
+            if dtype in ['Int16', 'UInt16', 'Int32', 'UInt32', 'Float32', 'Float64']:
+                cmd.extend(["-co", "PREDICTOR=2"])
+            else:
+                cmd.extend(["-co", "PREDICTOR=1"])
+        
+        # Handle nodata
+        if 'bands' in file_info and file_info['bands']:
+            nodata = file_info['bands'][0].get('noDataValue')
+            if nodata is not None:
+                cmd.extend(["-a_nodata", str(nodata)])
+        
+        # Check if reprojection is needed
+        if "EPSG:4326" not in src_crs and "WGS 84" not in src_crs:
+            print(f"   [REPROJECT] Source is not in EPSG:4326, using gdalwarp...")
+            
+            # Use gdalwarp for reprojection
+            with tempfile.NamedTemporaryFile(suffix='_warped.tif', delete=False) as warp_tmp:
+                warp_output = warp_tmp.name
+            
+            warp_cmd = [
+                "gdalwarp",
+                "-t_srs", "EPSG:4326",
+                "-r", "bilinear",  # Good for continuous data
+                "-multi",  # Use multiple threads
+                "-wo", f"NUM_THREADS={chunk_config.get('num_threads', 'ALL_CPUS')}",
+                "-wo", f"GDAL_CACHEMAX={chunk_config.get('gdal_cache_mb', 8192)}",
+                "-co", "TILED=YES",
+                "-co", "COMPRESS=LZW",  # Light compression for temp file
+                "-co", "BIGTIFF=YES",
+                "--config", "GDAL_CACHEMAX", str(chunk_config.get('gdal_cache_mb', 8192)),
+                input_path,
+                warp_output
+            ]
+            
+            print(f"   [WARP] Running: {' '.join(warp_cmd[:6])}...")
+            warp_result = subprocess.run(warp_cmd, capture_output=True, text=True)
+            
+            if warp_result.returncode != 0:
+                raise Exception(f"Warping failed: {warp_result.stderr}")
+            
+            # Now convert warped file to COG
+            cmd.extend([warp_output, output_path])
+        else:
+            # Direct conversion to COG
+            cmd.extend([input_path, output_path])
+        
+        # Run the conversion
+        print(f"   [CONVERT] Running: {' '.join(cmd[:6])}...")
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            raise Exception(f"COG creation failed: {result.stderr}")
+        
+        # Clean up warped file if it exists
+        if 'warp_output' in locals() and os.path.exists(warp_output):
+            os.remove(warp_output)
+        
+        # Validate the output
+        print(f"   [VALIDATE] Checking COG validity...")
+        validate_cmd = ["gdalinfo", "-checksum", output_path]
+        validate_result = subprocess.run(validate_cmd, capture_output=True, text=True)
+        
+        if validate_result.returncode == 0:
+            print(f"   [VALIDATE] ✅ COG is valid")
+        else:
+            print(f"   [VALIDATE] ⚠️ Warning: COG validation had issues")
+        
+        # Upload to S3
+        print(f"   [UPLOAD] Uploading to S3...")
+        
+        # For very large files, use multipart upload
+        file_size = os.path.getsize(output_path)
+        if file_size > 100 * 1024 * 1024:  # 100MB
+            print(f"   [UPLOAD] Large file ({file_size / 1024 / 1024:.1f} MB), using multipart upload...")
+            
+            # Configure multipart upload
+            config = boto3.s3.transfer.TransferConfig(
+                multipart_threshold=1024 * 25,  # 25MB
+                max_concurrency=10,
+                multipart_chunksize=1024 * 25,
+                use_threads=True
+            )
+            
+            s3_client.upload_file(
+                Filename=output_path,
+                Bucket=cog_data_bucket,
+                Key=s3_key,
+                Config=config
+            )
+        else:
+            s3_client.upload_file(
+                Filename=output_path,
+                Bucket=cog_data_bucket,
+                Key=s3_key
+            )
+        
+        print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+        
+        # Save locally if specified
+        if local_output_dir:
+            os.makedirs(local_output_dir, exist_ok=True)
+            local_path = os.path.join(local_output_dir, cog_filename)
+            import shutil
+            shutil.move(output_path, local_path)
+            print(f"   [LOCAL] Saved to {local_path}")
+        else:
+            # Clean up output file
+            os.remove(output_path)
+        
+        # Final memory report
+        if chunk_config.get('enable_memory_monitoring', True):
+            final_memory = get_memory_usage()
+            print(f"   [MEMORY] Final: {final_memory:.1f} MB (Change: {final_memory - initial_memory:+.1f} MB)")
+        
+    except Exception as e:
+        print(f"   [ERROR] Failed: {str(e)}")
+        
+        # Try alternative approach if VSI failed
+        if chunk_config.get('use_vsi', True) and "vsis3" in str(e):
+            print(f"   [FALLBACK] VSI failed, trying with download...")
+            chunk_config['use_vsi'] = False
+            return convert_to_proper_CRS_and_cogify_ultra_large(
+                name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix,
+                s3_client, COG_PROFILE, local_output_dir, chunk_config
+            )
+        raise
+    
+    finally:
+        # Clean up temporary files
+        for temp_file in ['output_path', 'warp_output']:
+            if temp_file in locals():
+                file_path = locals()[temp_file]
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
+        
+        # Force garbage collection
+        gc.collect()
+    
+    print("✅ Ultra-large file COG conversion complete")

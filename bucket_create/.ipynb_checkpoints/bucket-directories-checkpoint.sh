@@ -3,16 +3,21 @@
 # S3 bucket name
 BUCKET_NAME="nasa-disasters"
 
+# Prefix for all directories
+PREFIX="drcs_activations_new"
+
 # Array of satellite/sensor names
 declare -a DIRECTORIES=(
     "Sentinel-1"
     "Sentinel-2"
+    "Sentinel-5P"
     "Landsat"
     "MODIS"
     "VIIRS"
     "ASTER"
     "MASTER"
     "ECOSTRESS"
+    "EOS"
     "Planet"
     "Maxar"
     "HLS"
@@ -24,10 +29,12 @@ declare -a DIRECTORIES=(
     "COMSAR"
     "UAVSAR"
     "WB-57"
+    "GoogleEarth"
+    "Unknown"
+    "Blackmarble"
 )
 
-# Prefix for all directories
-PREFIX="drcs_activations_new"
+
 
 # Function to create a directory in S3
 create_s3_directory() {
