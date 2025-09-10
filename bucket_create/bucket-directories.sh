@@ -10,6 +10,7 @@ PREFIX="drcs_activations_new"
 declare -a DIRECTORIES=(
     "Sentinel-1"
     "Sentinel-2"
+    "Sentinel-1_2"
     "Landsat"
     "MODIS"
     "VIIRS"
