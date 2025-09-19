@@ -16,7 +16,8 @@ from cog_utilities import (
     check_cache_status,
     clear_cache,
     validate_cog,
-    export_COG_PROFILE
+    export_COG_PROFILE,
+    check_and_fix_nan_values
 )
 
 
@@ -290,7 +291,21 @@ def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket
                 ds.rio.set_spatial_dims("lon", "lat", inplace=True)
             
             #Smart nodata handling
-            ds.rio.write_nodata(set_no_data_value(ds), inplace=True)
+            nodata_val = set_no_data_value(ds)
+            ds.rio.write_nodata(nodata_val, inplace=True)
+
+            # Check and fix NaN values in the data
+            print(f"   [NAN_CHECK] Checking for invalid values...")
+            for band_idx in range(1, ds.rio.count + 1):
+                band_data = ds[band_idx - 1].values  # xarray uses 0-based indexing
+                fixed_data, stats = check_and_fix_nan_values(
+                    band_data,
+                    nodata_value=nodata_val,
+                    dtype=ds.dtype,
+                    band_idx=band_idx
+                )
+                if stats['invalid_count'] > 0:
+                    ds[band_idx - 1].values = fixed_data
 
             with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
                 tmp_name = tmp.name
@@ -490,16 +505,24 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                     reproject_kwargs['dst_nodata'] = src_nodata
                                 
                                 reproject(**reproject_kwargs)
-                                
+
+                                # Check and fix NaN values in the chunk
+                                chunk_data, nan_stats = check_and_fix_nan_values(
+                                    chunk_data,
+                                    nodata_value=src_nodata,
+                                    dtype=src.dtypes[0],
+                                    band_idx=band_idx if chunk_config.get('debug_chunks', False) else None
+                                )
+
                                 # Verify chunk has data before writing
                                 if src_nodata is not None:
                                     non_nodata_count = np.count_nonzero(chunk_data != src_nodata)
                                 else:
                                     non_nodata_count = np.count_nonzero(chunk_data)
-                                    
+
                                 if non_nodata_count > 0 and chunk_config.get('debug_chunks', False):
                                     print(f"     [CHUNK] Band {band_idx}, Window({x},{y},{win_width},{win_height}): {non_nodata_count} non-nodata pixels")
-                                
+
                                 # Write chunk to output
                                 dst.write(chunk_data, band_idx, window=window)
                                 
@@ -617,8 +640,17 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 win_width = min(chunk_size, src.width - x)
                                 win_height = min(chunk_size, src.height - y)
                                 window = Window(x, y, win_width, win_height)
-                                
+
                                 data = src.read(band_idx, window=window)
+
+                                # Check and fix NaN values before writing to COG
+                                data, nan_stats = check_and_fix_nan_values(
+                                    data,
+                                    nodata_value=src.nodata,
+                                    dtype=src.dtypes[0],
+                                    band_idx=None  # Suppress detailed logging during final write
+                                )
+
                                 dst.write(data, band_idx, window=window)
             
             # Now convert the complete GeoTIFF to COG using rio-cogeo for better compatibility
@@ -698,6 +730,19 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                             # Write all bands at once
                             for band_idx in range(1, src_temp.count + 1):
                                 data = src_temp.read(band_idx)
+
+                                # Check and fix NaN values
+                                data, nan_stats = check_and_fix_nan_values(
+                                    data,
+                                    nodata_value=src_temp.nodata,
+                                    dtype=src_temp.dtypes[0],
+                                    band_idx=None  # Will log only if invalid values found
+                                )
+
+                                # Log if we found invalid values
+                                if nan_stats.get('invalid_count', 0) > 0:
+                                    print(f"   [NAN_CHECK] Band {band_idx}: Fixed {nan_stats['invalid_count']} invalid values")
+
                                 # Verify data before writing
                                 if np.all(data == 0) or (src_temp.nodata is not None and np.all(data == src_temp.nodata)):
                                     print(f"   [WARNING] Band {band_idx} appears to be all nodata/zeros!")
@@ -760,6 +805,7 @@ def convert_to_proper_CRS_and_cogify_ultra_large(name, BUCKET, cog_filename, cog
     import subprocess
     import tempfile
     import os
+    import boto3
     from pathlib import Path
     
     if chunk_config is None:
@@ -906,11 +952,43 @@ def convert_to_proper_CRS_and_cogify_ultra_large(name, BUCKET, cog_filename, cog
         print(f"   [VALIDATE] Checking COG validity...")
         validate_cmd = ["gdalinfo", "-checksum", output_path]
         validate_result = subprocess.run(validate_cmd, capture_output=True, text=True)
-        
+
         if validate_result.returncode == 0:
             print(f"   [VALIDATE] ✅ COG is valid")
         else:
             print(f"   [VALIDATE] ⚠️ Warning: COG validation had issues")
+
+        # Check for NaN values in the output file
+        print(f"   [NAN_CHECK] Checking output for invalid values...")
+        try:
+            with rasterio.open(output_path, 'r+') as dst:
+                found_nan = False
+                for band_idx in range(1, dst.count + 1):
+                    # Read small chunks to check for NaN values in large files
+                    for y in range(0, dst.height, 4096):
+                        for x in range(0, dst.width, 4096):
+                            win_width = min(4096, dst.width - x)
+                            win_height = min(4096, dst.height - y)
+                            window = Window(x, y, win_width, win_height)
+
+                            data = dst.read(band_idx, window=window)
+
+                            # Check and fix NaN values
+                            fixed_data, nan_stats = check_and_fix_nan_values(
+                                data,
+                                nodata_value=dst.nodata,
+                                dtype=dst.dtypes[0],
+                                band_idx=None  # Suppress per-chunk logging
+                            )
+
+                            if nan_stats['invalid_count'] > 0:
+                                found_nan = True
+                                dst.write(fixed_data, band_idx, window=window)
+
+                if found_nan:
+                    print(f"   [NAN_CHECK] Fixed invalid values in output file")
+        except Exception as e:
+            print(f"   [NAN_CHECK] Warning: Could not check for NaN values: {e}")
         
         # Upload to S3
         print(f"   [UPLOAD] Uploading to S3...")

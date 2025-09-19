@@ -10,6 +10,7 @@ This module provides functions for:
 
 import os
 import shutil
+import numpy as np
 from typing import Tuple, Dict, List, Optional
 
 
@@ -124,6 +125,110 @@ def clear_cache(confirm: bool = False, data_download_dir: str = "data_download")
     
     shutil.rmtree(data_download_dir)
     print(f"✅ Cache cleared: {data_download_dir}/ removed")
+
+
+def check_and_fix_nan_values(data: np.ndarray, nodata_value=None, dtype=None, band_idx=None) -> Tuple[np.ndarray, Dict]:
+    """
+    Check for and fix NaN, inf, and other invalid values in raster data.
+
+    Args:
+        data: numpy array containing the raster data
+        nodata_value: the nodata value to use for replacement (if None, will be determined from dtype)
+        dtype: the data type of the array (used to determine appropriate nodata value)
+        band_idx: optional band index for logging purposes
+
+    Returns:
+        tuple: (fixed_data, stats_dict) where fixed_data is the array with invalid values replaced
+               and stats_dict contains information about what was found and fixed
+    """
+    stats = {
+        'nan_count': 0,
+        'inf_count': 0,
+        'neginf_count': 0,
+        'invalid_count': 0,
+        'total_pixels': data.size,
+        'percent_invalid': 0,
+        'replacement_value': nodata_value
+    }
+
+    # Determine data type if not provided
+    if dtype is None:
+        dtype = data.dtype
+
+    # Only check for NaN/inf in float types
+    if np.issubdtype(dtype, np.floating):
+        # Create mask for invalid values
+        nan_mask = np.isnan(data)
+        inf_mask = np.isinf(data) & (data > 0)
+        neginf_mask = np.isinf(data) & (data < 0)
+
+        # Count invalid values
+        stats['nan_count'] = np.count_nonzero(nan_mask)
+        stats['inf_count'] = np.count_nonzero(inf_mask)
+        stats['neginf_count'] = np.count_nonzero(neginf_mask)
+
+        # Combine all invalid masks
+        invalid_mask = nan_mask | inf_mask | neginf_mask
+        stats['invalid_count'] = np.count_nonzero(invalid_mask)
+
+        # Determine replacement value if not provided
+        if nodata_value is None:
+            if dtype in [np.float32, np.float64]:
+                nodata_value = -9999.0
+            else:
+                nodata_value = 0
+
+        stats['replacement_value'] = nodata_value
+
+        # Replace invalid values
+        if stats['invalid_count'] > 0:
+            data = data.copy()  # Don't modify original
+            data[invalid_mask] = nodata_value
+
+            stats['percent_invalid'] = (stats['invalid_count'] / stats['total_pixels']) * 100
+
+            # Log the replacement
+            band_str = f"Band {band_idx}" if band_idx is not None else "Data"
+            print(f"   [NAN_CHECK] {band_str}: Found and replaced {stats['invalid_count']:,} invalid values ({stats['percent_invalid']:.2f}%)")
+            if stats['nan_count'] > 0:
+                print(f"                - NaN values: {stats['nan_count']:,}")
+            if stats['inf_count'] > 0:
+                print(f"                - Inf values: {stats['inf_count']:,}")
+            if stats['neginf_count'] > 0:
+                print(f"                - -Inf values: {stats['neginf_count']:,}")
+            print(f"                - Replaced with: {nodata_value}")
+
+    elif np.issubdtype(dtype, np.integer):
+        # For integer types, check for sentinel values that might represent undefined
+        # This is less common but can happen with certain data sources
+
+        # Determine potential undefined values based on dtype
+        if dtype == np.uint8:
+            # For uint8, 255 is sometimes used as undefined
+            undefined_vals = []  # Usually 0 is used as nodata for uint8
+        elif dtype == np.uint16:
+            # For uint16, 65535 might be undefined
+            undefined_vals = [65535]
+        elif dtype == np.int16:
+            # For int16, -32768 might be undefined
+            undefined_vals = [-32768]
+        elif dtype == np.int32:
+            # For int32, -2147483648 might be undefined
+            undefined_vals = [-2147483648]
+        else:
+            undefined_vals = []
+
+        # Check for these values only if they seem suspicious (all pixels have this value in a region)
+        for val in undefined_vals:
+            if val in data:
+                count = np.count_nonzero(data == val)
+                # Only consider it invalid if it appears in more than 1% of pixels
+                # This avoids false positives with legitimate data
+                if count > data.size * 0.01:
+                    if band_idx is not None:
+                        print(f"   [NAN_CHECK] Band {band_idx}: Found {count:,} pixels with suspicious value {val}")
+
+    return data, stats
 
 
 def validate_cog(filepath: str) -> Tuple[bool, Dict]:
