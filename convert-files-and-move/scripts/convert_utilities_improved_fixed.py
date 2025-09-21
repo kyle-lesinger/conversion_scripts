@@ -391,57 +391,75 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
 
             print(f"   [COGIFY] Using rio-cogeo for conversion...")
 
-            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                tmp_name = tmp.name
+            # For large files, use current directory instead of /tmp
+            file_size_mb = os.path.getsize(reproject_filename) / (1024 * 1024)
+            use_local_temp = file_size_mb > 1000  # Use local dir for files > 1GB
 
-                COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
-                compress_type = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').lower()
+            if use_local_temp:
+                # Create temp file in current working directory
+                import uuid
+                tmp_name = f"temp_cog_{uuid.uuid4().hex[:8]}.tif"
+                print(f"   [TEMP] Using local directory for temp file (file size: {file_size_mb:.1f} MB)")
+            else:
+                # Use system temp directory for smaller files
+                try:
+                    with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
+                        tmp_name = tmp.name
+                    print(f"   [TEMP] Using system temp directory")
+                except (OSError, PermissionError) as e:
+                    # Fallback to current directory if temp dir fails
+                    import uuid
+                    tmp_name = f"temp_cog_{uuid.uuid4().hex[:8]}.tif"
+                    print(f"   [TEMP] System temp failed ({e}), using local directory")
 
-                if compress_type == 'zstd':
-                    dst_profile = {
-                        'driver': 'COG',
-                        'compress': 'zstd',
-                        'zstd_level': COG_PROFILE_CONFIG.get('zstd_level', 9),
-                        'blockxsize': 512,
-                        'blockysize': 512
-                    }
-                else:
-                    dst_profile = cog_profiles.get(compress_type, cog_profiles['deflate'])
-                    dst_profile['blockxsize'] = 512
-                    dst_profile['blockysize'] = 512
+            COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
+            compress_type = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').lower()
 
-                # Convert to COG
-                cog_translate(
-                    reproject_filename,
-                    tmp_name,
-                    dst_profile,
-                    use_cog_driver=True,
-                    in_memory=False,
-                    quiet=False
-                )
+            if compress_type == 'zstd':
+                dst_profile = {
+                    'driver': 'COG',
+                    'compress': 'zstd',
+                    'zstd_level': COG_PROFILE_CONFIG.get('zstd_level', 9),
+                    'blockxsize': 512,
+                    'blockysize': 512
+                }
+            else:
+                dst_profile = cog_profiles.get(compress_type, cog_profiles['deflate'])
+                dst_profile['blockxsize'] = 512
+                dst_profile['blockysize'] = 512
 
-                # Validate COG
-                validate_cog(tmp_name)
+            # Convert to COG
+            cog_translate(
+                reproject_filename,
+                tmp_name,
+                dst_profile,
+                use_cog_driver=True,
+                in_memory=False,
+                quiet=False
+            )
 
-                # Upload to S3
-                print(f"   [UPLOAD] Uploading to S3...")
-                s3_client.upload_file(
-                    Filename=tmp_name,
-                    Bucket=cog_data_bucket,
-                    Key=s3_key
-                )
-                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+            # Validate COG
+            validate_cog(tmp_name)
 
-                # Save locally if specified
-                if local_output_dir:
-                    os.makedirs(local_output_dir, exist_ok=True)
-                    local_path = os.path.join(local_output_dir, cog_filename)
-                    shutil.copy(tmp_name, local_path)
-                    print(f"   [LOCAL] Saved to {local_path}")
+            # Upload to S3
+            print(f"   [UPLOAD] Uploading to S3...")
+            s3_client.upload_file(
+                Filename=tmp_name,
+                Bucket=cog_data_bucket,
+                Key=s3_key
+            )
+            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
 
-                # Cleanup COG temp file
-                if chunk_config.get('cleanup_immediate', True):
-                    os.remove(tmp_name)
+            # Save locally if specified
+            if local_output_dir:
+                os.makedirs(local_output_dir, exist_ok=True)
+                local_path = os.path.join(local_output_dir, cog_filename)
+                shutil.copy(tmp_name, local_path)
+                print(f"   [LOCAL] Saved to {local_path}")
+
+            # Cleanup COG temp file
+            if chunk_config.get('cleanup_immediate', True):
+                os.remove(tmp_name)
 
         except ImportError:
             print(f"   [COGIFY] rio-cogeo not available, using fallback method")
