@@ -9,6 +9,8 @@ from tqdm import tqdm
 import numpy as np
 import tempfile
 import rioxarray as rxr
+import boto3
+from botocore.exceptions import ClientError
 
 
 # Import COG and cache utilities
@@ -27,6 +29,29 @@ from memory_utils import (
     format_bytes
 
 )
+
+
+def check_s3_file_exists(s3_client, bucket, key):
+    """
+    Check if a file already exists in S3.
+
+    Args:
+        s3_client: Boto3 S3 client
+        bucket: S3 bucket name
+        key: S3 object key
+
+    Returns:
+        bool: True if file exists, False otherwise
+    """
+    try:
+        s3_client.head_object(Bucket=bucket, Key=key)
+        return True
+    except ClientError as e:
+        # If a 404 error, the file does not exist
+        if e.response['Error']['Code'] == '404':
+            return False
+        # For other errors, re-raise
+        raise
 
 def set_no_data_value(ds):
     print(f"   [NODATA] Data type: {ds.dtype}")
@@ -165,6 +190,13 @@ def convert_to_proper_CRS_and_cogify_ultra_large_fixed(name, BUCKET, cog_filenam
         }
     
     s3_key = f"{cog_data_prefix}/{cog_filename}"
+
+    # Check if the renamed file already exists in S3
+    print(f"   [CHECK] Checking if file already exists in S3: s3://{cog_data_bucket}/{s3_key}")
+    if check_s3_file_exists(s3_client, cog_data_bucket, s3_key):
+        print(f"   [SKIP] File already exists in S3, skipping processing: {cog_filename}")
+        return
+
     reproject_filename = f"reproj/{cog_filename}"
 
     # FIXED: Proper credential handling
