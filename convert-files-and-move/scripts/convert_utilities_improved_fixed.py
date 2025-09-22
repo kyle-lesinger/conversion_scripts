@@ -428,14 +428,29 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                 dst_profile['blockxsize'] = 512
                 dst_profile['blockysize'] = 512
 
-            # Convert to COG
+            # Convert to COG with explicit temp directory
+            import os
+
+            # Get the directory for temp files (current dir if tmp_name has no dir)
+            temp_dir = os.path.dirname(tmp_name) if os.path.dirname(tmp_name) else '.'
+
+            # Set GDAL environment variables for temp files
+            os.environ['GDAL_CACHEMAX'] = '512'  # MB
+            os.environ['GDAL_TMPDIR'] = temp_dir  # Use same dir as our temp file
+            os.environ['TMPDIR'] = temp_dir
+
+            # Ensure the temp directory exists
+            if temp_dir != '.':
+                os.makedirs(temp_dir, exist_ok=True)
+
             cog_translate(
                 reproject_filename,
                 tmp_name,
                 dst_profile,
                 use_cog_driver=True,
                 in_memory=False,
-                quiet=False
+                quiet=False,
+                config={'GDAL_TMPDIR': temp_dir}  # Also pass as config
             )
 
             # Validate COG
