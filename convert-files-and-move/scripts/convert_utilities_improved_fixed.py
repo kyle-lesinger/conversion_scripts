@@ -428,8 +428,6 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                 dst_profile['blockxsize'] = 512
                 dst_profile['blockysize'] = 512
 
-            # Convert to COG with explicit temp directory
-            import os
 
             # Get the directory for temp files (current dir if tmp_name has no dir)
             temp_dir = os.path.dirname(tmp_name) if os.path.dirname(tmp_name) else '.'
