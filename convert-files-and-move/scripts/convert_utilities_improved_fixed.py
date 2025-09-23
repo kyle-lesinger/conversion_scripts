@@ -432,32 +432,52 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
             # Get the directory for temp files (current dir if tmp_name has no dir)
             temp_dir = os.path.dirname(tmp_name) if os.path.dirname(tmp_name) else '.'
 
+            # Ensure temp directory exists and is absolute
+            if temp_dir == '.':
+                temp_dir = os.getcwd()
+            else:
+                temp_dir = os.path.abspath(temp_dir)
+            os.makedirs(temp_dir, exist_ok=True)
+
             # Set GDAL environment variables for temp files
             os.environ['GDAL_CACHEMAX'] = '512'  # MB
             os.environ['GDAL_TMPDIR'] = temp_dir  # Use same dir as our temp file
             os.environ['TMPDIR'] = temp_dir
 
-            # Ensure the temp directory exists
-            if temp_dir != '.':
-                os.makedirs(temp_dir, exist_ok=True)
+            # Save current directory and change to temp directory
+            original_dir = os.getcwd()
 
-            cog_translate(
-                reproject_filename,
-                tmp_name,
-                dst_profile,
-                use_cog_driver=True,
-                in_memory=False,
-                quiet=False,
-                config={'GDAL_TMPDIR': temp_dir}  # Also pass as config
-            )
+            try:
+                # Change to temp directory so rio-cogeo creates files there
+                os.chdir(temp_dir)
+                print(f"   [TEMP] Changed working directory to: {temp_dir}")
 
-            # Validate COG
-            validate_cog(tmp_name)
+                # Use absolute paths for source and destination
+                abs_reproject_filename = os.path.abspath(os.path.join(original_dir, reproject_filename))
+                abs_tmp_name = os.path.abspath(tmp_name)
+
+                cog_translate(
+                    abs_reproject_filename,
+                    abs_tmp_name,
+                    dst_profile,
+                    use_cog_driver=True,
+                    in_memory=False,
+                    quiet=False,
+                    config={'GDAL_TMPDIR': temp_dir}  # Also pass as config
+                )
+            finally:
+                # Always restore original directory
+                os.chdir(original_dir)
+                print(f"   [TEMP] Restored working directory to: {original_dir}")
+
+            # Validate COG (use absolute path)
+            validate_cog(abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name)
 
             # Upload to S3
             print(f"   [UPLOAD] Uploading to S3...")
+            upload_file = abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name
             s3_client.upload_file(
-                Filename=tmp_name,
+                Filename=upload_file,
                 Bucket=cog_data_bucket,
                 Key=s3_key
             )
@@ -467,12 +487,15 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
             if local_output_dir:
                 os.makedirs(local_output_dir, exist_ok=True)
                 local_path = os.path.join(local_output_dir, cog_filename)
-                shutil.copy(tmp_name, local_path)
+                copy_file = abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name
+                shutil.copy(copy_file, local_path)
                 print(f"   [LOCAL] Saved to {local_path}")
 
             # Cleanup COG temp file
             if chunk_config.get('cleanup_immediate', True):
-                os.remove(tmp_name)
+                cleanup_file = abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name
+                if os.path.exists(cleanup_file):
+                    os.remove(cleanup_file)
 
         except ImportError:
             print(f"   [COGIFY] rio-cogeo not available, using fallback method")
