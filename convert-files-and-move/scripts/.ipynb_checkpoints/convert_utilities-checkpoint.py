@@ -9,6 +9,8 @@ from tqdm import tqdm
 import numpy as np
 import tempfile
 import rioxarray as rxr
+import boto3
+from botocore.exceptions import ClientError
 
 
 # Import COG and cache utilities
@@ -16,7 +18,8 @@ from cog_utilities import (
     check_cache_status,
     clear_cache,
     validate_cog,
-    export_COG_PROFILE
+    export_COG_PROFILE,
+    check_and_fix_nan_values
 )
 
 
@@ -27,6 +30,29 @@ from memory_utils import (
     format_bytes
 
 )
+
+def check_s3_file_exists(s3_client, bucket, key):
+    """
+    Check if a file already exists in S3.
+
+    Args:
+        s3_client: Boto3 S3 client
+        bucket: S3 bucket name
+        key: S3 object key
+
+    Returns:
+        bool: True if file exists, False otherwise
+    """
+    try:
+        s3_client.head_object(Bucket=bucket, Key=key)
+        return True
+    except ClientError as e:
+        # If a 404 error, the file does not exist
+        if e.response['Error']['Code'] == '404':
+            return False
+        # For other errors, re-raise
+        raise
+
 
 def set_no_data_value(ds):
     print(f"   [NODATA] Data type: {ds.dtype}")
@@ -139,196 +165,6 @@ def makedirs(name):
     
     return data_download_dir, local_subdir, local_download_path
 
-def convert_to_proper_CRS_and_cogify(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, local_output_dir=None):
-    """
-    Convert a file to Cloud Optimized GeoTIFF with proper CRS.
-    
-    This function includes:
-    - Download caching to avoid re-downloading files
-    - CRS reprojection to EPSG:4326
-    - COG validation before upload
-    - Upload to S3
-    - Smart nodata value handling based on data type
-    """
-    s3_key = f"{cog_data_prefix}/{cog_filename}"
-    reproject_filename = f"reproj/{cog_filename}"
-    
-    # Create necessary directories
-    os.makedirs("reproj", exist_ok=True)
-    
-    # Create data_download directory for caching
-    data_download_dir = "data_download"
-    os.makedirs(data_download_dir, exist_ok=True)
-    
-    # Create subdirectory structure to match S3 path
-    s3_path_parts = name.split('/')
-    local_subdir = os.path.join(data_download_dir, *s3_path_parts[:-1])
-    os.makedirs(local_subdir, exist_ok=True)
-    
-    # Local path for the downloaded file (persistent storage)
-    local_download_path = os.path.join(data_download_dir, name)
-    
-    # Temporary file for processing
-    temp_input_file = f"temp_{os.path.basename(name)}"
-
-    try:
-        # Check if file already exists locally
-        if os.path.exists(local_download_path):
-            print(f"   [CACHE HIT] Using cached file: {local_download_path}")
-            import shutil
-            shutil.copy(local_download_path, temp_input_file)
-        else:
-            # Download the file from S3
-            print(f"   [DOWNLOAD] Downloading from S3...")
-            s3_client.download_file(BUCKET, name, local_download_path)
-            print(f"   [DOWNLOAD] ✅ Saved to cache")
-            import shutil
-            shutil.copy(local_download_path, temp_input_file)
-        
-        # Reproject to EPSG:4326
-        print(f"   [REPROJECT] Converting to EPSG:4326...")
-        with rasterio.open(temp_input_file) as src:
-            dst_crs = "EPSG:4326"
-            
-            # Check if reprojection is needed
-            if src.crs and src.crs.to_string() == dst_crs:
-                print(f"   [REPROJECT] Already in {dst_crs}, skipping reprojection")
-                import shutil
-                shutil.copy(temp_input_file, reproject_filename)
-            else:
-                transform, width, height = calculate_default_transform(
-                    src.crs, dst_crs, src.width, src.height, *src.bounds
-                )
-                kwargs = src.meta.copy()
-                kwargs.update({
-                    "driver": "COG",
-                    "compress": "DEFLATE",
-                    "crs": dst_crs,
-                    "transform": transform,
-                    "width": width,
-                    "height": height
-                })
-
-                with rasterio.open(reproject_filename, "w", **kwargs) as dst:
-                    for band_idx in range(1, src.count + 1):
-                        reproject(
-                            source=rasterio.band(src, band_idx),
-                            destination=rasterio.band(dst, band_idx),
-                            src_transform=src.transform,
-                            src_crs=src.crs,
-                            dst_transform=transform,
-                            dst_crs=dst_crs,
-                            resampling=Resampling.nearest,
-                            wrapdateline=True
-                        )
-
-        # COGify & upload
-        print(f"   [COGIFY] Creating COG...")
-        
-        # Try using rio-cogeo first for better compatibility
-        try:
-            from rio_cogeo.cogeo import cog_translate
-            from rio_cogeo.profiles import cog_profiles
-            
-            print(f"   [COGIFY] Using rio-cogeo for conversion...")
-            
-            # Get COG_PROFILE and predictor
-            COG_PROFILE = export_COG_PROFILE()
-            with rasterio.open(reproject_filename) as src:
-                predictor = get_predictor_for_dtype(src.dtypes[0])
-                print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
-            
-            # Get compression type
-            compress_type = COG_PROFILE.get('compress', 'DEFLATE').lower()
-            
-            # Create appropriate profile
-            if compress_type == 'zstd':
-                dst_profile = {
-                    'driver': 'COG',
-                    'compress': 'zstd',
-                    'zstd_level': COG_PROFILE.get('zstd_level', 9),
-                    'predictor': predictor
-                }
-            elif compress_type == 'lzw':
-                dst_profile = cog_profiles.get('lzw')
-                dst_profile['predictor'] = predictor
-            else:
-                dst_profile = cog_profiles.get('deflate')
-                dst_profile['predictor'] = predictor
-            
-            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                tmp_name = tmp.name
-                # Use rio-cogeo translate
-                cog_translate(
-                    reproject_filename,
-                    tmp_name,
-                    dst_profile,
-                    use_cog_driver=True,
-                    in_memory=False,
-                    quiet=False
-                )
-                
-        except ImportError:
-            # Fallback to rioxarray method
-            print(f"   [COGIFY] rio-cogeo not available, using rioxarray...")
-            ds = rxr.open_rasterio(reproject_filename)
-            
-            # Get COG_PROFILE
-            COG_PROFILE = export_COG_PROFILE()
-            
-            # Auto-detect and set predictor
-            with rasterio.open(reproject_filename) as src:
-                predictor = get_predictor_for_dtype(src.dtypes[0])
-                # Update COG_PROFILE with predictor
-                cog_profile_with_predictor = COG_PROFILE.copy()
-                cog_profile_with_predictor['predictor'] = predictor
-                print(f"   [PREDICTOR] Data type: {src.dtypes[0]}, using PREDICTOR={predictor}")
-        
-            # Handle coordinate naming
-            if "y" in ds.dims and "x" in ds.dims:
-                ds = ds.rename({"y": "lat", "x": "lon"})
-                ds.rio.set_spatial_dims("lon", "lat", inplace=True)
-            
-            #Smart nodata handling
-            ds.rio.write_nodata(set_no_data_value(ds), inplace=True)
-
-            with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                tmp_name = tmp.name
-                ds.rio.to_raster(tmp_name, **cog_profile_with_predictor)
-            
-            # Validate COG
-            validate_COG(tmp_name)
-            
-            # Upload to S3
-            print(f"   [UPLOAD] Uploading to S3...")
-            s3_client.upload_file(
-                Filename=tmp_name,
-                Bucket=cog_data_bucket,
-                Key=s3_key
-            )
-            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
-            
-            # Save locally if specified
-            if local_output_dir:
-                os.makedirs(local_output_dir, exist_ok=True)
-                local_path = os.path.join(local_output_dir, cog_filename)
-                import shutil
-                shutil.copy(tmp_name, local_path)
-            
-    except Exception as e:
-        print(f"   [ERROR] Failed: {str(e)}")
-        raise
-            
-    finally:
-        # Clean up temporary files
-        for temp_file in [temp_input_file, reproject_filename]:
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
-        if 'tmp_name' in locals() and os.path.exists(tmp_name):
-            os.remove(tmp_name)
-
-    print("✅ COG conversion function defined with smart nodata handling")
-
 
 def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, COG_PROFILE,
                                             local_output_dir=None, chunk_config=None):
@@ -354,6 +190,13 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
         }
     
     s3_key = f"{cog_data_prefix}/{cog_filename}"
+
+    # Check if the renamed file already exists in S3
+    print(f"   [CHECK] Checking if file already exists in S3: s3://{cog_data_bucket}/{s3_key}")
+    if check_s3_file_exists(s3_client, cog_data_bucket, s3_key):
+        print(f"   [SKIP] File already exists in S3, skipping processing: {cog_filename}")
+        return
+
     reproject_filename = f"reproj/{cog_filename}"
 
     #Make directories
@@ -490,16 +333,24 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                     reproject_kwargs['dst_nodata'] = src_nodata
                                 
                                 reproject(**reproject_kwargs)
-                                
+
+                                # Check and fix NaN values in the chunk
+                                chunk_data, nan_stats = check_and_fix_nan_values(
+                                    chunk_data,
+                                    nodata_value=src_nodata,
+                                    dtype=src.dtypes[0],
+                                    band_idx=band_idx if chunk_config.get('debug_chunks', False) else None
+                                )
+
                                 # Verify chunk has data before writing
                                 if src_nodata is not None:
                                     non_nodata_count = np.count_nonzero(chunk_data != src_nodata)
                                 else:
                                     non_nodata_count = np.count_nonzero(chunk_data)
-                                    
+
                                 if non_nodata_count > 0 and chunk_config.get('debug_chunks', False):
                                     print(f"     [CHUNK] Band {band_idx}, Window({x},{y},{win_width},{win_height}): {non_nodata_count} non-nodata pixels")
-                                
+
                                 # Write chunk to output
                                 dst.write(chunk_data, band_idx, window=window)
                                 
@@ -617,8 +468,17 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                                 win_width = min(chunk_size, src.width - x)
                                 win_height = min(chunk_size, src.height - y)
                                 window = Window(x, y, win_width, win_height)
-                                
+
                                 data = src.read(band_idx, window=window)
+
+                                # Check and fix NaN values before writing to COG
+                                data, nan_stats = check_and_fix_nan_values(
+                                    data,
+                                    nodata_value=src.nodata,
+                                    dtype=src.dtypes[0],
+                                    band_idx=None  # Suppress detailed logging during final write
+                                )
+
                                 dst.write(data, band_idx, window=window)
             
             # Now convert the complete GeoTIFF to COG using rio-cogeo for better compatibility
@@ -698,6 +558,19 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
                             # Write all bands at once
                             for band_idx in range(1, src_temp.count + 1):
                                 data = src_temp.read(band_idx)
+
+                                # Check and fix NaN values
+                                data, nan_stats = check_and_fix_nan_values(
+                                    data,
+                                    nodata_value=src_temp.nodata,
+                                    dtype=src_temp.dtypes[0],
+                                    band_idx=None  # Will log only if invalid values found
+                                )
+
+                                # Log if we found invalid values
+                                if nan_stats.get('invalid_count', 0) > 0:
+                                    print(f"   [NAN_CHECK] Band {band_idx}: Fixed {nan_stats['invalid_count']} invalid values")
+
                                 # Verify data before writing
                                 if np.all(data == 0) or (src_temp.nodata is not None and np.all(data == src_temp.nodata)):
                                     print(f"   [WARNING] Band {band_idx} appears to be all nodata/zeros!")
@@ -706,25 +579,25 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             # Clean up temporary GeoTIFF
             if os.path.exists(temp_tiff_name):
                 os.remove(temp_tiff_name)
-                
-                # Validate COG
-                validate_COG(tmp_name)
-                
-                # Upload to S3
-                print(f"   [UPLOAD] Uploading to S3...")
-                s3_client.upload_file(
-                    Filename=tmp_name,
-                    Bucket=cog_data_bucket,
-                    Key=s3_key
-                )
-                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
-                
-                # Save locally if specified
-                if local_output_dir:
-                    os.makedirs(local_output_dir, exist_ok=True)
-                    local_path = os.path.join(local_output_dir, cog_filename)
-                    import shutil
-                    shutil.copy(tmp_name, local_path)
+
+            # Validate COG
+            validate_COG(tmp_name)
+
+            # Upload to S3
+            print(f"   [UPLOAD] Uploading to S3...")
+            s3_client.upload_file(
+                Filename=tmp_name,
+                Bucket=cog_data_bucket,
+                Key=s3_key
+            )
+            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+
+            # Save locally if specified
+            if local_output_dir:
+                os.makedirs(local_output_dir, exist_ok=True)
+                local_path = os.path.join(local_output_dir, cog_filename)
+                import shutil
+                shutil.copy(tmp_name, local_path)
         
         # Final memory report
         if chunk_config.get('enable_memory_monitoring', True):
@@ -748,242 +621,3 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
 
     print("✅ Chunked COG conversion function defined with memory-efficient processing")
 
-
-def convert_to_proper_CRS_and_cogify_ultra_large(name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix, s3_client, COG_PROFILE,
-                                            local_output_dir=None, chunk_config=None):
-    """
-    Convert ultra-large files to Cloud Optimized GeoTIFF using GDAL's streaming capabilities.
-    
-    Optimized for files that are too large to fit in memory (10GB+).
-    Uses GDAL command-line tools for efficient processing without loading data into Python memory.
-    """
-    import subprocess
-    import tempfile
-    import os
-    from pathlib import Path
-    
-    if chunk_config is None:
-        chunk_config = {
-            "use_vsi": True,  # Use GDAL's virtual file system
-            "gdal_cache_mb": 8192,  # 8GB GDAL cache
-            "num_threads": "ALL_CPUS",
-            "enable_memory_monitoring": True
-        }
-    
-    s3_key = f"{cog_data_prefix}/{cog_filename}"
-    reproject_filename = f"reproj/{cog_filename}"
-
-    if hasattr(s3_client._client_config.credentials, 'token'):
-        os.environ['AWS_SESSION_TOKEN'] = s3_client._client_config.credentials.token
-    
-    # Memory monitoring
-    if chunk_config.get('enable_memory_monitoring', True):
-        initial_memory = get_memory_usage()
-        print(f"   [MEMORY] Initial: {initial_memory:.1f} MB")
-    
-    try:
-        # Use GDAL VSI for S3 access
-        if chunk_config.get('use_vsi', True):
-            # Direct S3 access without downloading
-            input_path = f"/vsis3/{BUCKET}/{name}"
-            print(f"   [VSI] Using GDAL virtual file system for S3 access")
-        else:
-            # Fallback to download if VSI fails
-            data_download_dir, local_subdir, local_download_path = makedirs(name)
-            if os.path.exists(local_download_path):
-                print(f"   [CACHE HIT] Using cached file: {local_download_path}")
-                input_path = local_download_path
-            else:
-                print(f"   [DOWNLOAD] Downloading from S3...")
-                s3_client.download_file(BUCKET, name, local_download_path)
-                input_path = local_download_path
-        
-        # Check source file info using gdalinfo
-        print(f"   [INFO] Getting source file information...")
-        info_cmd = ["gdalinfo", "-json", input_path]
-        info_result = subprocess.run(info_cmd, capture_output=True, text=True)
-        
-        if info_result.returncode != 0:
-            raise Exception(f"Failed to read file info: {info_result.stderr}")
-        
-        import json
-        file_info = json.loads(info_result.stdout)
-        src_crs = file_info.get('coordinateSystem', {}).get('wkt', '')
-        
-        # Create temporary output file
-        with tempfile.NamedTemporaryFile(suffix='_cog.tif', delete=False) as tmp:
-            output_path = tmp.name
-        
-        # Build GDAL command for COG creation with reprojection
-        print(f"   [PROCESS] Converting to COG with EPSG:4326...")
-        
-        # Determine compression settings
-        COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
-        compress = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').upper()
-        
-        # Build gdal_translate command
-        cmd = [
-            "gdal_translate",
-            "-of", "COG",
-            "-co", f"COMPRESS={compress}",
-            "-co", "BIGTIFF=YES",  # Essential for large files
-            "-co", "BLOCKSIZE=512",  # Good for cloud storage
-            "-co", "OVERVIEWS=IGNORE_EXISTING",  # Don't rebuild if they exist
-            "-co", f"NUM_THREADS={chunk_config.get('num_threads', 'ALL_CPUS')}",
-            "-co", "SPARSE_OK=TRUE",  # Handle sparse data efficiently
-            "--config", "GDAL_CACHEMAX", str(chunk_config.get('gdal_cache_mb', 8192)),
-            "--config", "GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR",
-            "--config", "CPL_VSIL_CURL_CHUNK_SIZE", "10485760",  # 10MB chunks for S3
-            "--config", "GDAL_HTTP_MULTIPLEX", "YES",
-            "--config", "GDAL_HTTP_VERSION", "2",
-        ]
-        
-        # Add compression-specific options
-        if compress == "ZSTD":
-            cmd.extend(["-co", f"ZSTD_LEVEL={COG_PROFILE_CONFIG.get('zstd_level', 9)}"])
-        
-        # Add predictor based on data type (check from file info)
-        if 'bands' in file_info and file_info['bands']:
-            dtype = file_info['bands'][0].get('type', 'Byte')
-            if dtype in ['Int16', 'UInt16', 'Int32', 'UInt32', 'Float32', 'Float64']:
-                cmd.extend(["-co", "PREDICTOR=2"])
-            else:
-                cmd.extend(["-co", "PREDICTOR=1"])
-        
-        # Handle nodata
-        if 'bands' in file_info and file_info['bands']:
-            nodata = file_info['bands'][0].get('noDataValue')
-            if nodata is not None:
-                cmd.extend(["-a_nodata", str(nodata)])
-        
-        # Check if reprojection is needed
-        if "EPSG:4326" not in src_crs and "WGS 84" not in src_crs:
-            print(f"   [REPROJECT] Source is not in EPSG:4326, using gdalwarp...")
-            
-            # Use gdalwarp for reprojection
-            with tempfile.NamedTemporaryFile(suffix='_warped.tif', delete=False) as warp_tmp:
-                warp_output = warp_tmp.name
-            
-            warp_cmd = [
-                "gdalwarp",
-                "-t_srs", "EPSG:4326",
-                "-r", "bilinear",  # Good for continuous data
-                "-multi",  # Use multiple threads
-                "-wo", f"NUM_THREADS={chunk_config.get('num_threads', 'ALL_CPUS')}",
-                "-wo", f"GDAL_CACHEMAX={chunk_config.get('gdal_cache_mb', 8192)}",
-                "-co", "TILED=YES",
-                "-co", "COMPRESS=LZW",  # Light compression for temp file
-                "-co", "BIGTIFF=YES",
-                "--config", "GDAL_CACHEMAX", str(chunk_config.get('gdal_cache_mb', 8192)),
-                input_path,
-                warp_output
-            ]
-            
-            print(f"   [WARP] Running: {' '.join(warp_cmd[:6])}...")
-            warp_result = subprocess.run(warp_cmd, capture_output=True, text=True)
-            
-            if warp_result.returncode != 0:
-                raise Exception(f"Warping failed: {warp_result.stderr}")
-            
-            # Now convert warped file to COG
-            cmd.extend([warp_output, output_path])
-        else:
-            # Direct conversion to COG
-            cmd.extend([input_path, output_path])
-        
-        # Run the conversion
-        print(f"   [CONVERT] Running: {' '.join(cmd[:6])}...")
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        
-        if result.returncode != 0:
-            raise Exception(f"COG creation failed: {result.stderr}")
-        
-        # Clean up warped file if it exists
-        if 'warp_output' in locals() and os.path.exists(warp_output):
-            os.remove(warp_output)
-        
-        # Validate the output
-        print(f"   [VALIDATE] Checking COG validity...")
-        validate_cmd = ["gdalinfo", "-checksum", output_path]
-        validate_result = subprocess.run(validate_cmd, capture_output=True, text=True)
-        
-        if validate_result.returncode == 0:
-            print(f"   [VALIDATE] ✅ COG is valid")
-        else:
-            print(f"   [VALIDATE] ⚠️ Warning: COG validation had issues")
-        
-        # Upload to S3
-        print(f"   [UPLOAD] Uploading to S3...")
-        
-        # For very large files, use multipart upload
-        file_size = os.path.getsize(output_path)
-        if file_size > 100 * 1024 * 1024:  # 100MB
-            print(f"   [UPLOAD] Large file ({file_size / 1024 / 1024:.1f} MB), using multipart upload...")
-            
-            # Configure multipart upload
-            config = boto3.s3.transfer.TransferConfig(
-                multipart_threshold=1024 * 25,  # 25MB
-                max_concurrency=10,
-                multipart_chunksize=1024 * 25,
-                use_threads=True
-            )
-            
-            s3_client.upload_file(
-                Filename=output_path,
-                Bucket=cog_data_bucket,
-                Key=s3_key,
-                Config=config
-            )
-        else:
-            s3_client.upload_file(
-                Filename=output_path,
-                Bucket=cog_data_bucket,
-                Key=s3_key
-            )
-        
-        print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
-        
-        # Save locally if specified
-        if local_output_dir:
-            os.makedirs(local_output_dir, exist_ok=True)
-            local_path = os.path.join(local_output_dir, cog_filename)
-            import shutil
-            shutil.move(output_path, local_path)
-            print(f"   [LOCAL] Saved to {local_path}")
-        else:
-            # Clean up output file
-            os.remove(output_path)
-        
-        # Final memory report
-        if chunk_config.get('enable_memory_monitoring', True):
-            final_memory = get_memory_usage()
-            print(f"   [MEMORY] Final: {final_memory:.1f} MB (Change: {final_memory - initial_memory:+.1f} MB)")
-        
-    except Exception as e:
-        print(f"   [ERROR] Failed: {str(e)}")
-        
-        # Try alternative approach if VSI failed
-        if chunk_config.get('use_vsi', True) and "vsis3" in str(e):
-            print(f"   [FALLBACK] VSI failed, trying with download...")
-            chunk_config['use_vsi'] = False
-            return convert_to_proper_CRS_and_cogify_ultra_large(
-                name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix,
-                s3_client, COG_PROFILE, local_output_dir, chunk_config
-            )
-        raise
-    
-    finally:
-        # Clean up temporary files
-        for temp_file in ['output_path', 'warp_output']:
-            if temp_file in locals():
-                file_path = locals()[temp_file]
-                if os.path.exists(file_path):
-                    try:
-                        os.remove(file_path)
-                    except:
-                        pass
-        
-        # Force garbage collection
-        gc.collect()
-    
-    print("✅ Ultra-large file COG conversion complete")
