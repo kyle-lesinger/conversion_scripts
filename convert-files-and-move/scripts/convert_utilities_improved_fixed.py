@@ -8,6 +8,7 @@ import shutil
 import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.windows import Window
+from rasterio.enums import Resampling
 import gc
 from tqdm import tqdm
 import numpy as np
@@ -382,120 +383,111 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                         chunk_config, initial_memory
                     )
 
-        # Convert to COG
-        print(f"   [COGIFY] Creating COG from reprojected file...")
+        # Upload reprojected file directly or create COG
+        print(f"   [COGIFY] Preparing file for upload...")
 
         try:
-            from rio_cogeo.cogeo import cog_translate
-            from rio_cogeo.profiles import cog_profiles
-
-            print(f"   [COGIFY] Using rio-cogeo for conversion...")
-
-            # For large files, use current directory instead of /tmp
-            file_size_mb = os.path.getsize(reproject_filename) / (1024 * 1024)
-            use_local_temp = file_size_mb > 1000  # Use local dir for files > 1GB
-
-            if use_local_temp:
-                # Create temp file in current working directory
-                import uuid
-                tmp_name = f"temp_cog_{uuid.uuid4().hex[:8]}.tif"
-                print(f"   [TEMP] Using local directory for temp file (file size: {file_size_mb:.1f} MB)")
-            else:
-                # Use system temp directory for smaller files
-                try:
-                    with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                        tmp_name = tmp.name
-                    print(f"   [TEMP] Using system temp directory")
-                except (OSError, PermissionError) as e:
-                    # Fallback to current directory if temp dir fails
-                    import uuid
-                    tmp_name = f"temp_cog_{uuid.uuid4().hex[:8]}.tif"
-                    print(f"   [TEMP] System temp failed ({e}), using local directory")
-
-            COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
-            compress_type = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').lower()
-
-            if compress_type == 'zstd':
-                dst_profile = {
-                    'driver': 'COG',
-                    'compress': 'zstd',
-                    'zstd_level': COG_PROFILE_CONFIG.get('zstd_level', 9),
-                    'blockxsize': 512,
-                    'blockysize': 512
-                }
-            else:
-                dst_profile = cog_profiles.get(compress_type, cog_profiles['deflate'])
-                dst_profile['blockxsize'] = 512
-                dst_profile['blockysize'] = 512
-
-
-            # Get the directory for temp files (current dir if tmp_name has no dir)
-            temp_dir = os.path.dirname(tmp_name) if os.path.dirname(tmp_name) else '.'
-
-            # Ensure temp directory exists and is absolute
-            if temp_dir == '.':
-                temp_dir = os.getcwd()
-            else:
-                temp_dir = os.path.abspath(temp_dir)
-            os.makedirs(temp_dir, exist_ok=True)
-
-            # Set GDAL environment variables for temp files
-            os.environ['GDAL_CACHEMAX'] = '512'  # MB
-            os.environ['GDAL_TMPDIR'] = temp_dir  # Use same dir as our temp file
-            os.environ['TMPDIR'] = temp_dir
-
-            # Save current directory and change to temp directory
-            original_dir = os.getcwd()
+            # First check if the reprojected file is already a valid COG
+            from rio_cogeo.cogeo import cog_validate
 
             try:
-                # Change to temp directory so rio-cogeo creates files there
-                os.chdir(temp_dir)
-                print(f"   [TEMP] Changed working directory to: {temp_dir}")
+                cog_validate(reproject_filename)
+                print(f"   [COG] Reprojected file is already a valid COG!")
+                is_valid_cog = True
+            except:
+                print(f"   [COG] File needs COG optimization")
+                is_valid_cog = False
 
-                # Use absolute paths for source and destination
-                abs_reproject_filename = os.path.abspath(os.path.join(original_dir, reproject_filename))
-                abs_tmp_name = os.path.abspath(tmp_name)
-
-                cog_translate(
-                    abs_reproject_filename,
-                    abs_tmp_name,
-                    dst_profile,
-                    use_cog_driver=True,
-                    in_memory=False,
-                    quiet=False,
-                    config={'GDAL_TMPDIR': temp_dir}  # Also pass as config
+            # Option 1: If file is already a valid COG, just upload it
+            if is_valid_cog:
+                print(f"   [UPLOAD] Uploading valid COG directly to S3...")
+                s3_client.upload_file(
+                    Filename=reproject_filename,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
                 )
-            finally:
-                # Always restore original directory
-                os.chdir(original_dir)
-                print(f"   [TEMP] Restored working directory to: {original_dir}")
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
 
-            # Validate COG (use absolute path)
-            validate_cog(abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name)
+            else:
+                # Option 2: Use rasterio to create COG without temp files
+                print(f"   [COG] Creating optimized COG using rasterio...")
 
-            # Upload to S3
-            print(f"   [UPLOAD] Uploading to S3...")
-            upload_file = abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name
-            s3_client.upload_file(
-                Filename=upload_file,
-                Bucket=cog_data_bucket,
-                Key=s3_key
-            )
-            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+                # Get file size for progress info
+                file_size_mb = os.path.getsize(reproject_filename) / (1024 * 1024)
+                print(f"   [COG] Processing {file_size_mb:.1f} MB file...")
+
+                try:
+                    # Create COG using rasterio with proper tiling and compression
+                    with rasterio.open(reproject_filename, 'r') as src:
+                        # Get the COG profile
+                        COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
+
+                        # Create profile for COG
+                        profile = src.profile.copy()
+                        profile.update({
+                            'driver': 'GTiff',
+                            'COMPRESS': COG_PROFILE_CONFIG.get('compress', 'DEFLATE').upper(),
+                            'TILED': True,
+                            'BLOCKXSIZE': 512,
+                            'BLOCKYSIZE': 512,
+                            'BIGTIFF': 'YES' if file_size_mb > 3000 else 'IF_SAFER',
+                            'NUM_THREADS': 'ALL_CPUS'
+                        })
+
+                        # For ZSTD compression
+                        if profile['COMPRESS'] == 'ZSTD':
+                            profile['ZSTD_LEVEL'] = COG_PROFILE_CONFIG.get('zstd_level', 9)
+
+                        # Create a temporary local COG file
+                        import uuid
+                        temp_cog = f"cog_{uuid.uuid4().hex[:8]}.tif"
+
+                        print(f"   [COG] Writing optimized COG...")
+                        with rasterio.open(temp_cog, 'w', **profile) as dst:
+                            # Copy data band by band
+                            for band_idx in range(1, src.count + 1):
+                                dst.write(src.read(band_idx), band_idx)
+
+                            # Build overviews for COG
+                            print(f"   [COG] Building overviews...")
+                            factors = [2, 4, 8, 16, 32]
+                            dst.build_overviews(factors, Resampling.average)
+
+                            # Update tags for COG
+                            dst.update_tags(ns='rio_overview', resampling='average')
+
+                        # Upload the COG to S3
+                        print(f"   [UPLOAD] Uploading COG to S3...")
+                        s3_client.upload_file(
+                            Filename=temp_cog,
+                            Bucket=cog_data_bucket,
+                            Key=s3_key
+                        )
+                        print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+
+                        # Clean up temp COG file
+                        if os.path.exists(temp_cog):
+                            os.remove(temp_cog)
+                            print(f"   [CLEANUP] Removed temporary COG file")
+
+                except Exception as e:
+                    print(f"   [WARNING] Rasterio COG creation failed: {e}")
+                    print(f"   [FALLBACK] Uploading reprojected file as-is...")
+
+                    # Fallback: Just upload the reprojected file
+                    s3_client.upload_file(
+                        Filename=reproject_filename,
+                        Bucket=cog_data_bucket,
+                        Key=s3_key
+                    )
+                    print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
 
             # Save locally if specified
             if local_output_dir:
                 os.makedirs(local_output_dir, exist_ok=True)
                 local_path = os.path.join(local_output_dir, cog_filename)
-                copy_file = abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name
-                shutil.copy(copy_file, local_path)
+                shutil.copy(reproject_filename, local_path)
                 print(f"   [LOCAL] Saved to {local_path}")
-
-            # Cleanup COG temp file
-            if chunk_config.get('cleanup_immediate', True):
-                cleanup_file = abs_tmp_name if 'abs_tmp_name' in locals() else tmp_name
-                if os.path.exists(cleanup_file):
-                    os.remove(cleanup_file)
 
         except ImportError:
             print(f"   [COGIFY] rio-cogeo not available, using fallback method")
