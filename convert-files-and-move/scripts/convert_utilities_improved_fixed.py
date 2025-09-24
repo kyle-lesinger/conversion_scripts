@@ -31,7 +31,8 @@ from memory_utils import (
     get_memory_usage,
     calculate_optimal_chunk_size,
     estimate_chunk_memory,
-    format_bytes
+    format_bytes,
+    get_available_memory_mb
 )
 
 
@@ -46,10 +47,7 @@ def check_s3_file_exists(s3_client, bucket, key):
         raise
 
 
-def get_available_memory_mb():
-    """Get available system memory in MB."""
-    memory = psutil.virtual_memory()
-    return memory.available / 1024 / 1024
+
 
 
 def adaptive_chunk_size(width, height, bands, dtype, target_memory_mb=None):

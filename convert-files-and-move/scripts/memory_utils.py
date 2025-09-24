@@ -54,3 +54,8 @@ def calculate_optimal_chunk_size(raster_width, raster_height, bands, dtype, memo
     return chunk_size
 
 print("✅ Memory monitoring utilities loaded")
+
+def get_available_memory_mb():
+    """Get available system memory in MB."""
+    memory = psutil.virtual_memory()
+    return memory.available / 1024 / 1024
