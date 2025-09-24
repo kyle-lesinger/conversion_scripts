@@ -47,6 +47,128 @@ def check_s3_file_exists(s3_client, bucket, key):
         raise
 
 
+def set_no_data_value(ds):
+    """
+    Set appropriate nodata value based on data type for a dataset object.
+
+    Args:
+        ds: Dataset object with dtype attribute
+
+    Returns:
+        Appropriate nodata value for the data type
+    """
+    print(f"   [NODATA] Data type: {ds.dtype}")
+    if ds.dtype == 'uint8':
+        # For RGB images (uint8), use 0 as nodata (black pixels)
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+    elif ds.dtype == 'uint16':
+        # For uint16, use 0 as nodata
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+    elif ds.dtype == 'int8':
+        # For int8, must use value within -128 to 127 range
+        nodata_value = -128
+        print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+    elif ds.dtype == 'int16':
+        # For int16, -9999 is fine
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+    else:
+        # For float32, int32, etc., use -9999
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+
+    return nodata_value
+
+
+def set_no_data_value_src(src):
+    """
+    Set appropriate nodata value based on data type for a rasterio source.
+
+    Args:
+        src: Rasterio source object with dtypes attribute
+
+    Returns:
+        Appropriate nodata value for the data type
+    """
+    print(f"   [NODATA] Data type: {src.dtypes[0]}")
+    if src.dtypes[0] == 'uint8':
+        # For RGB images (uint8), use 0 as nodata (black pixels)
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+    elif src.dtypes[0] == 'uint16':
+        # For uint16, use 0 as nodata
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+    elif src.dtypes[0] == 'int8':
+        # For int8, must use value within -128 to 127 range
+        nodata_value = -128
+        print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+    elif src.dtypes[0] == 'int16':
+        # For int16, -9999 is fine
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+    else:
+        # For float32, int32, etc., use -9999
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for {src.dtypes[0]} data")
+
+    return nodata_value
+
+
+def validate_COG(tmp_name):
+    """
+    Validate if a file is a proper Cloud Optimized GeoTIFF.
+
+    Args:
+        tmp_name: Path to the file to validate
+
+    Returns:
+        None (prints validation results)
+    """
+    print(f"   [VALIDATE] Checking COG validity...")
+    is_valid_cog, validation_details = validate_cog(tmp_name)
+
+    if is_valid_cog:
+        print(f"   [VALIDATE] ✅ Valid COG")
+    else:
+        print(f"   [VALIDATE] ⚠️ COG validation warnings")
+        critical_errors = [e for e in validation_details['errors'] if 'Invalid driver' in e]
+        if critical_errors:
+            raise ValueError(f"Critical COG validation failed")
+        if 'errors' in validation_details:
+            for error in validation_details['errors']:
+                print(f"      - {error}")
+        if 'warnings' in validation_details:
+            for warning in validation_details['warnings']:
+                print(f"      - {warning}")
+    return
+
+
+def get_predictor_for_dtype(dtype):
+    """
+    Determine the appropriate predictor based on data type.
+
+    Args:
+        dtype: numpy dtype or string representation of dtype
+
+    Returns:
+        int: Predictor value (1, 2, or 3)
+    """
+    dtype_str = str(dtype)
+
+    # Integer types use predictor 2
+    if dtype_str in ['uint8', 'uint16', 'uint32', 'int8', 'int16', 'int32']:
+        return 2
+    # Floating-point types use predictor 3
+    elif dtype_str in ['float32', 'float64']:
+        return 3
+    # Default to no predictor
+    else:
+        return 1
+
+
 
 
 
@@ -355,8 +477,15 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                     src.crs, dst_crs, src.width, src.height, *src.bounds
                 )
 
-                # Get nodata value
-                src_nodata = src.nodata if src.nodata is not None else None
+                # Get or set appropriate nodata value
+                if src.nodata is not None:
+                    src_nodata = src.nodata
+                else:
+                    # Use helper function to set appropriate nodata
+                    src_nodata = set_no_data_value_src(src)
+
+                # Get appropriate predictor for data type
+                predictor = get_predictor_for_dtype(src.dtypes[0])
 
                 # Prepare output profile with ZSTD compression
                 kwargs = src.meta.copy()
@@ -364,7 +493,7 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                     'driver': 'GTiff',
                     'compress': 'ZSTD',      # Use ZSTD for better compression
                     'zstd_level': 9,         # Good balance for intermediate file
-                    'predictor': 2,          # Horizontal predictor for better compression
+                    'predictor': predictor,  # Use appropriate predictor for data type
                     'crs': dst_crs,
                     'transform': transform,
                     'width': width,
@@ -419,20 +548,22 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                         profile = src.profile.copy()
 
                         # Force ZSTD compression for best file size
-                        compress_type = COG_PROFILE_CONFIG.get('compress', 'ZSTD').upper()
-                        if compress_type != 'ZSTD':
-                            compress_type = 'ZSTD'  # Override to use ZSTD
+                        compress_type = 'zstd'  # Use lowercase for rasterio
+
+                        # Use helper function to determine predictor
+                        predictor = get_predictor_for_dtype(src.dtypes[0])
+                        print(f"   [COG] Using ZSTD compression with predictor={predictor} for {src.dtypes[0]} data")
 
                         profile.update({
                             'driver': 'GTiff',
-                            'COMPRESS': compress_type,
-                            'ZSTD_LEVEL': 22,    # Maximum compression level for smallest file size
-                            'PREDICTOR': 2,      # Horizontal predictor for better compression
-                            'TILED': True,
-                            'BLOCKXSIZE': 512,
-                            'BLOCKYSIZE': 512,
-                            'BIGTIFF': 'YES' if file_size_mb > 3000 else 'IF_SAFER',
-                            'NUM_THREADS': 'ALL_CPUS'
+                            'compress': compress_type,    # lowercase for rasterio
+                            'zstd_level': 22,             # Maximum compression level
+                            'predictor': predictor,       # Appropriate predictor for data type
+                            'tiled': True,
+                            'blockxsize': 512,
+                            'blockysize': 512,
+                            'bigtiff': 'YES' if file_size_mb > 3000 else 'IF_SAFER',
+                            'num_threads': 'ALL_CPUS'
                         })
 
                         # Create a temporary local COG file
