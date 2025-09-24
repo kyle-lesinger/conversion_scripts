@@ -358,11 +358,13 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                 # Get nodata value
                 src_nodata = src.nodata if src.nodata is not None else None
 
-                # Prepare output profile
+                # Prepare output profile with ZSTD compression
                 kwargs = src.meta.copy()
                 kwargs.update({
                     'driver': 'GTiff',
-                    'compress': 'DEFLATE',
+                    'compress': 'ZSTD',      # Use ZSTD for better compression
+                    'zstd_level': 9,         # Good balance for intermediate file
+                    'predictor': 2,          # Horizontal predictor for better compression
                     'crs': dst_crs,
                     'transform': transform,
                     'width': width,
@@ -420,21 +422,25 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                         # Get the COG profile
                         COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
 
-                        # Create profile for COG
+                        # Create profile for COG with maximum ZSTD compression
                         profile = src.profile.copy()
+
+                        # Force ZSTD compression for best file size
+                        compress_type = COG_PROFILE_CONFIG.get('compress', 'ZSTD').upper()
+                        if compress_type != 'ZSTD':
+                            compress_type = 'ZSTD'  # Override to use ZSTD
+
                         profile.update({
                             'driver': 'GTiff',
-                            'COMPRESS': COG_PROFILE_CONFIG.get('compress', 'DEFLATE').upper(),
+                            'COMPRESS': compress_type,
+                            'ZSTD_LEVEL': 22,    # Maximum compression level for smallest file size
+                            'PREDICTOR': 2,      # Horizontal predictor for better compression
                             'TILED': True,
                             'BLOCKXSIZE': 512,
                             'BLOCKYSIZE': 512,
                             'BIGTIFF': 'YES' if file_size_mb > 3000 else 'IF_SAFER',
                             'NUM_THREADS': 'ALL_CPUS'
                         })
-
-                        # For ZSTD compression
-                        if profile['COMPRESS'] == 'ZSTD':
-                            profile['ZSTD_LEVEL'] = COG_PROFILE_CONFIG.get('zstd_level', 9)
 
                         # Create a temporary local COG file
                         import uuid
