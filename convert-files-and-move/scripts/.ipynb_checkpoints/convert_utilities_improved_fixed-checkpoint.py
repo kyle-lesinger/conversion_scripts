@@ -8,6 +8,7 @@ import shutil
 import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.windows import Window
+from rasterio.enums import Resampling
 import gc
 from tqdm import tqdm
 import numpy as np
@@ -30,7 +31,8 @@ from memory_utils import (
     get_memory_usage,
     calculate_optimal_chunk_size,
     estimate_chunk_memory,
-    format_bytes
+    format_bytes,
+    get_available_memory_mb
 )
 
 
@@ -45,10 +47,129 @@ def check_s3_file_exists(s3_client, bucket, key):
         raise
 
 
-def get_available_memory_mb():
-    """Get available system memory in MB."""
-    memory = psutil.virtual_memory()
-    return memory.available / 1024 / 1024
+def set_no_data_value(ds):
+    """
+    Set appropriate nodata value based on data type for a dataset object.
+
+    Args:
+        ds: Dataset object with dtype attribute
+
+    Returns:
+        Appropriate nodata value for the data type
+    """
+    print(f"   [NODATA] Data type: {ds.dtype}")
+    if ds.dtype == 'uint8':
+        # For RGB images (uint8), use 0 as nodata (black pixels)
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+    elif ds.dtype == 'uint16':
+        # For uint16, use 0 as nodata
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+    elif ds.dtype == 'int8':
+        # For int8, must use value within -128 to 127 range
+        nodata_value = -128
+        print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+    elif ds.dtype == 'int16':
+        # For int16, -9999 is fine
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+    else:
+        # For float32, int32, etc., use -9999
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for {ds.dtype} data")
+
+    return nodata_value
+
+
+def set_no_data_value_src(src):
+    """
+    Set appropriate nodata value based on data type for a rasterio source.
+
+    Args:
+        src: Rasterio source object with dtypes attribute
+
+    Returns:
+        Appropriate nodata value for the data type
+    """
+    print(f"   [NODATA] Data type: {src.dtypes[0]}")
+    if src.dtypes[0] == 'uint8':
+        # For RGB images (uint8), use 0 as nodata (black pixels)
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint8 data")
+    elif src.dtypes[0] == 'uint16':
+        # For uint16, use 0 as nodata
+        nodata_value = 0
+        print(f"   [NODATA] Using nodata value {nodata_value} for uint16 data")
+    elif src.dtypes[0] == 'int8':
+        # For int8, must use value within -128 to 127 range
+        nodata_value = -128
+        print(f"   [NODATA] Using nodata value {nodata_value} for int8 data")
+    elif src.dtypes[0] == 'int16':
+        # For int16, -9999 is fine
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for int16 data")
+    else:
+        # For float32, int32, etc., use -9999
+        nodata_value = -9999
+        print(f"   [NODATA] Using nodata value {nodata_value} for {src.dtypes[0]} data")
+
+    return nodata_value
+
+
+def validate_COG(tmp_name):
+    """
+    Validate if a file is a proper Cloud Optimized GeoTIFF.
+
+    Args:
+        tmp_name: Path to the file to validate
+
+    Returns:
+        None (prints validation results)
+    """
+    print(f"   [VALIDATE] Checking COG validity...")
+    is_valid_cog, validation_details = validate_cog(tmp_name)
+
+    if is_valid_cog:
+        print(f"   [VALIDATE] ✅ Valid COG")
+    else:
+        print(f"   [VALIDATE] ⚠️ COG validation warnings")
+        critical_errors = [e for e in validation_details['errors'] if 'Invalid driver' in e]
+        if critical_errors:
+            raise ValueError(f"Critical COG validation failed")
+        if 'errors' in validation_details:
+            for error in validation_details['errors']:
+                print(f"      - {error}")
+        if 'warnings' in validation_details:
+            for warning in validation_details['warnings']:
+                print(f"      - {warning}")
+    return
+
+
+def get_predictor_for_dtype(dtype):
+    """
+    Determine the appropriate predictor based on data type.
+
+    Args:
+        dtype: numpy dtype or string representation of dtype
+
+    Returns:
+        int: Predictor value (1, 2, or 3)
+    """
+    dtype_str = str(dtype)
+
+    # Integer types use predictor 2
+    if dtype_str in ['uint8', 'uint16', 'uint32', 'int8', 'int16', 'int32']:
+        return 2
+    # Floating-point types use predictor 3
+    elif dtype_str in ['float32', 'float64']:
+        return 3
+    # Default to no predictor
+    else:
+        return 1
+
+
+
 
 
 def adaptive_chunk_size(width, height, bands, dtype, target_memory_mb=None):
@@ -356,14 +477,23 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                     src.crs, dst_crs, src.width, src.height, *src.bounds
                 )
 
-                # Get nodata value
-                src_nodata = src.nodata if src.nodata is not None else None
+                # Get or set appropriate nodata value
+                if src.nodata is not None:
+                    src_nodata = src.nodata
+                else:
+                    # Use helper function to set appropriate nodata
+                    src_nodata = set_no_data_value_src(src)
 
-                # Prepare output profile
+                # Get appropriate predictor for data type
+                predictor = get_predictor_for_dtype(src.dtypes[0])
+
+                # Prepare output profile with ZSTD compression
                 kwargs = src.meta.copy()
                 kwargs.update({
                     'driver': 'GTiff',
-                    'compress': 'DEFLATE',
+                    'compress': 'ZSTD',      # Use ZSTD for better compression
+                    'zstd_level': 9,         # Good balance for intermediate file
+                    'predictor': predictor,  # Use appropriate predictor for data type
                     'crs': dst_crs,
                     'transform': transform,
                     'width': width,
@@ -382,97 +512,110 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                         chunk_config, initial_memory
                     )
 
-        # Convert to COG
-        print(f"   [COGIFY] Creating COG from reprojected file...")
+        # Upload reprojected file directly or create COG
+        print(f"   [COGIFY] Preparing file for upload...")
 
         try:
-            from rio_cogeo.cogeo import cog_translate
-            from rio_cogeo.profiles import cog_profiles
+            # First check if the reprojected file is already a valid COG
+            from rio_cogeo.cogeo import cog_validate
 
-            print(f"   [COGIFY] Using rio-cogeo for conversion...")
+            try:
+                cog_validate(reproject_filename)
+                print(f"   [COG] Reprojected file is already a valid COG!")
+                is_valid_cog = True
+            except:
+                print(f"   [COG] File needs COG optimization")
+                is_valid_cog = False
 
-            # For large files, use current directory instead of /tmp
+            # Always rebuild as COG with overviews and compression, even if already valid
+            # This ensures we have overviews and optimal compression
+            if is_valid_cog:
+                print(f"   [COG] Reprojected file is already a valid COG, but rebuilding with overviews...")
+            else:
+                print(f"   [COG] Creating optimized COG using rasterio...")
+
+            # Get file size for progress info
             file_size_mb = os.path.getsize(reproject_filename) / (1024 * 1024)
-            use_local_temp = file_size_mb > 1000  # Use local dir for files > 1GB
+            print(f"   [COG] Processing {file_size_mb:.1f} MB file...")
 
-            if use_local_temp:
-                # Create temp file in current working directory
-                import uuid
-                tmp_name = f"temp_cog_{uuid.uuid4().hex[:8]}.tif"
-                print(f"   [TEMP] Using local directory for temp file (file size: {file_size_mb:.1f} MB)")
-            else:
-                # Use system temp directory for smaller files
-                try:
-                    with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as tmp:
-                        tmp_name = tmp.name
-                    print(f"   [TEMP] Using system temp directory")
-                except (OSError, PermissionError) as e:
-                    # Fallback to current directory if temp dir fails
-                    import uuid
-                    tmp_name = f"temp_cog_{uuid.uuid4().hex[:8]}.tif"
-                    print(f"   [TEMP] System temp failed ({e}), using local directory")
+            try:
+                # Create COG using rasterio with proper tiling and compression
+                with rasterio.open(reproject_filename, 'r') as src:
+                        # Get the COG profile
+                        COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
 
-            COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
-            compress_type = COG_PROFILE_CONFIG.get('compress', 'DEFLATE').lower()
+                        # Create profile for COG with maximum ZSTD compression
+                        profile = src.profile.copy()
 
-            if compress_type == 'zstd':
-                dst_profile = {
-                    'driver': 'COG',
-                    'compress': 'zstd',
-                    'zstd_level': COG_PROFILE_CONFIG.get('zstd_level', 9),
-                    'blockxsize': 512,
-                    'blockysize': 512
-                }
-            else:
-                dst_profile = cog_profiles.get(compress_type, cog_profiles['deflate'])
-                dst_profile['blockxsize'] = 512
-                dst_profile['blockysize'] = 512
+                        # Force ZSTD compression for best file size
+                        compress_type = 'zstd'  # Use lowercase for rasterio
 
+                        # Use helper function to determine predictor
+                        predictor = get_predictor_for_dtype(src.dtypes[0])
+                        print(f"   [COG] Using ZSTD compression with predictor={predictor} for {src.dtypes[0]} data")
 
-            # Get the directory for temp files (current dir if tmp_name has no dir)
-            temp_dir = os.path.dirname(tmp_name) if os.path.dirname(tmp_name) else '.'
+                        profile.update({
+                            'driver': 'GTiff',
+                            'compress': compress_type,    # lowercase for rasterio
+                            'zstd_level': 22,             # Maximum compression level
+                            'predictor': predictor,       # Appropriate predictor for data type
+                            'tiled': True,
+                            'blockxsize': 512,
+                            'blockysize': 512,
+                            'bigtiff': 'YES' if file_size_mb > 3000 else 'IF_SAFER',
+                            'num_threads': 'ALL_CPUS'
+                        })
 
-            # Set GDAL environment variables for temp files
-            os.environ['GDAL_CACHEMAX'] = '512'  # MB
-            os.environ['GDAL_TMPDIR'] = temp_dir  # Use same dir as our temp file
-            os.environ['TMPDIR'] = temp_dir
+                        # Create a temporary local COG file
+                        import uuid
+                        temp_cog = f"cog_{uuid.uuid4().hex[:8]}.tif"
 
-            # Ensure the temp directory exists
-            if temp_dir != '.':
-                os.makedirs(temp_dir, exist_ok=True)
+                        print(f"   [COG] Writing optimized COG...")
+                        with rasterio.open(temp_cog, 'w', **profile) as dst:
+                            # Copy data band by band
+                            for band_idx in range(1, src.count + 1):
+                                dst.write(src.read(band_idx), band_idx)
 
-            cog_translate(
-                reproject_filename,
-                tmp_name,
-                dst_profile,
-                use_cog_driver=True,
-                in_memory=False,
-                quiet=False,
-                config={'GDAL_TMPDIR': temp_dir}  # Also pass as config
-            )
+                            # Build overviews for COG
+                            print(f"   [COG] Building overviews...")
+                            factors = [2, 4, 8, 16, 32]
+                            dst.build_overviews(factors, Resampling.average)
 
-            # Validate COG
-            validate_cog(tmp_name)
+                            # Update tags for COG
+                            dst.update_tags(ns='rio_overview', resampling='average')
 
-            # Upload to S3
-            print(f"   [UPLOAD] Uploading to S3...")
-            s3_client.upload_file(
-                Filename=tmp_name,
-                Bucket=cog_data_bucket,
-                Key=s3_key
-            )
-            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+                # Upload the COG to S3
+                print(f"   [UPLOAD] Uploading COG to S3...")
+                s3_client.upload_file(
+                    Filename=temp_cog,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
+                )
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+
+                # Clean up temp COG file
+                if os.path.exists(temp_cog):
+                    os.remove(temp_cog)
+                    print(f"   [CLEANUP] Removed temporary COG file")
+
+            except Exception as e:
+                print(f"   [WARNING] Rasterio COG creation failed: {e}")
+                print(f"   [FALLBACK] Uploading reprojected file as-is...")
+
+                # Fallback: Just upload the reprojected file
+                s3_client.upload_file(
+                    Filename=reproject_filename,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
+                )
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
 
             # Save locally if specified
             if local_output_dir:
                 os.makedirs(local_output_dir, exist_ok=True)
                 local_path = os.path.join(local_output_dir, cog_filename)
-                shutil.copy(tmp_name, local_path)
+                shutil.copy(reproject_filename, local_path)
                 print(f"   [LOCAL] Saved to {local_path}")
-
-            # Cleanup COG temp file
-            if chunk_config.get('cleanup_immediate', True):
-                os.remove(tmp_name)
 
         except ImportError:
             print(f"   [COGIFY] rio-cogeo not available, using fallback method")

@@ -529,7 +529,7 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
 
             # Always rebuild as COG with overviews and compression, even if already valid
             # This ensures we have overviews and optimal compression
-            if is_valid_cog and 'errors' not in validation_info:
+            if is_valid_cog:
                 print(f"   [COG] Reprojected file is already a valid COG, but rebuilding with overviews...")
             else:
                 print(f"   [COG] Creating optimized COG using rasterio...")
