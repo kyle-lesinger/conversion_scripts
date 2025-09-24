@@ -398,27 +398,20 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                 print(f"   [COG] File needs COG optimization")
                 is_valid_cog = False
 
-            # Option 1: If file is already a valid COG, just upload it
-            if is_valid_cog:
-                print(f"   [UPLOAD] Uploading valid COG directly to S3...")
-                s3_client.upload_file(
-                    Filename=reproject_filename,
-                    Bucket=cog_data_bucket,
-                    Key=s3_key
-                )
-                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
-
+            # Always rebuild as COG with overviews and compression, even if already valid
+            # This ensures we have overviews and optimal compression
+            if is_valid_cog and 'errors' not in validation_info:
+                print(f"   [COG] Reprojected file is already a valid COG, but rebuilding with overviews...")
             else:
-                # Option 2: Use rasterio to create COG without temp files
                 print(f"   [COG] Creating optimized COG using rasterio...")
 
-                # Get file size for progress info
-                file_size_mb = os.path.getsize(reproject_filename) / (1024 * 1024)
-                print(f"   [COG] Processing {file_size_mb:.1f} MB file...")
+            # Get file size for progress info
+            file_size_mb = os.path.getsize(reproject_filename) / (1024 * 1024)
+            print(f"   [COG] Processing {file_size_mb:.1f} MB file...")
 
-                try:
-                    # Create COG using rasterio with proper tiling and compression
-                    with rasterio.open(reproject_filename, 'r') as src:
+            try:
+                # Create COG using rasterio with proper tiling and compression
+                with rasterio.open(reproject_filename, 'r') as src:
                         # Get the COG profile
                         COG_PROFILE_CONFIG = export_COG_PROFILE() if COG_PROFILE is None else COG_PROFILE
 
@@ -460,31 +453,31 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
                             # Update tags for COG
                             dst.update_tags(ns='rio_overview', resampling='average')
 
-                        # Upload the COG to S3
-                        print(f"   [UPLOAD] Uploading COG to S3...")
-                        s3_client.upload_file(
-                            Filename=temp_cog,
-                            Bucket=cog_data_bucket,
-                            Key=s3_key
-                        )
-                        print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+                # Upload the COG to S3
+                print(f"   [UPLOAD] Uploading COG to S3...")
+                s3_client.upload_file(
+                    Filename=temp_cog,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
+                )
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
 
-                        # Clean up temp COG file
-                        if os.path.exists(temp_cog):
-                            os.remove(temp_cog)
-                            print(f"   [CLEANUP] Removed temporary COG file")
+                # Clean up temp COG file
+                if os.path.exists(temp_cog):
+                    os.remove(temp_cog)
+                    print(f"   [CLEANUP] Removed temporary COG file")
 
-                except Exception as e:
-                    print(f"   [WARNING] Rasterio COG creation failed: {e}")
-                    print(f"   [FALLBACK] Uploading reprojected file as-is...")
+            except Exception as e:
+                print(f"   [WARNING] Rasterio COG creation failed: {e}")
+                print(f"   [FALLBACK] Uploading reprojected file as-is...")
 
-                    # Fallback: Just upload the reprojected file
-                    s3_client.upload_file(
-                        Filename=reproject_filename,
-                        Bucket=cog_data_bucket,
-                        Key=s3_key
-                    )
-                    print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+                # Fallback: Just upload the reprojected file
+                s3_client.upload_file(
+                    Filename=reproject_filename,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
+                )
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
 
             # Save locally if specified
             if local_output_dir:
