@@ -293,18 +293,27 @@ def process_with_fixed_chunks(src, dst, src_crs, dst_crs, transform, width, heig
                                 dtype=src.dtypes[0]
                             )
 
-                            # Reproject sub-chunk
-                            reproject(
-                                source=rasterio.band(src, band_idx),
-                                destination=chunk_data,
-                                src_transform=src.transform,
-                                src_crs=src_crs,
-                                dst_transform=rasterio.windows.transform(dst_window, transform),
-                                dst_crs=dst_crs,
-                                resampling=Resampling.nearest,
-                                src_nodata=src_nodata,
-                                dst_nodata=src_nodata
-                            )
+                            # Reproject sub-chunk with error handling
+                            try:
+                                reproject(
+                                    source=rasterio.band(src, band_idx),
+                                    destination=chunk_data,
+                                    src_transform=src.transform,
+                                    src_crs=src_crs,
+                                    dst_transform=rasterio.windows.transform(dst_window, transform),
+                                    dst_crs=dst_crs,
+                                    resampling=Resampling.nearest,
+                                    src_nodata=src_nodata,
+                                    dst_nodata=src_nodata
+                                )
+                            except Exception as reproject_error:
+                                print(f"\n   [CHUNK ERROR] Failed at chunk ({x}, {y}) window ({sub_x}, {sub_y})")
+                                print(f"   [CHUNK ERROR] Window size: {sub_win_width}x{sub_win_height}")
+                                print(f"   [CHUNK ERROR] Error: {str(reproject_error)}")
+
+                                # Try to recover by filling with nodata
+                                print(f"   [CHUNK RECOVERY] Filling failed chunk with nodata value")
+                                chunk_data.fill(src_nodata if src_nodata is not None else 0)
 
                             # Fix NaN values
                             chunk_data, _ = check_and_fix_nan_values(
@@ -327,18 +336,33 @@ def process_with_fixed_chunks(src, dst, src_crs, dst_crs, transform, width, heig
                         dtype=src.dtypes[0]
                     )
 
-                    # Reproject chunk
-                    reproject(
-                        source=rasterio.band(src, band_idx),
-                        destination=chunk_data,
-                        src_transform=src.transform,
-                        src_crs=src_crs,
-                        dst_transform=rasterio.windows.transform(window, transform),
-                        dst_crs=dst_crs,
-                        resampling=Resampling.nearest,
-                        src_nodata=src_nodata,
-                        dst_nodata=src_nodata
-                    )
+                    # Reproject chunk with error handling
+                    try:
+                        reproject(
+                            source=rasterio.band(src, band_idx),
+                            destination=chunk_data,
+                            src_transform=src.transform,
+                            src_crs=src_crs,
+                            dst_transform=rasterio.windows.transform(window, transform),
+                            dst_crs=dst_crs,
+                            resampling=Resampling.nearest,
+                            src_nodata=src_nodata,
+                            dst_nodata=src_nodata
+                        )
+                    except Exception as reproject_error:
+                        print(f"\n   [CHUNK ERROR] Failed at chunk ({x}, {y}), band {band_idx}")
+                        print(f"   [CHUNK ERROR] Window: {window}")
+                        print(f"   [CHUNK ERROR] Error type: {type(reproject_error).__name__}")
+                        print(f"   [CHUNK ERROR] Error message: {str(reproject_error)}")
+
+                        # Check if it's a streaming issue
+                        if "curl" in str(reproject_error).lower() or "vsi" in str(reproject_error).lower():
+                            print(f"   [CHUNK ERROR] Appears to be S3 streaming issue")
+                            raise Exception("S3 streaming failed - need to retry with download")
+
+                        # Try to recover by filling with nodata
+                        print(f"   [CHUNK RECOVERY] Attempting recovery by filling with nodata")
+                        chunk_data.fill(src_nodata if src_nodata is not None else 0)
 
                     # Fix NaN values
                     chunk_data, _ = check_and_fix_nan_values(
@@ -656,7 +680,22 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
 
     except Exception as e:
         print(f"   [ERROR] Unexpected error: {e}")
-        raise
+
+        # Check if it's a streaming failure and we should retry with download
+        if "S3 streaming failed" in str(e) and chunk_config.get('use_streaming', True):
+            print(f"   [RETRY] S3 streaming failed, retrying with file download...")
+
+            # Update config to disable streaming
+            new_config = chunk_config.copy()
+            new_config['use_streaming'] = False
+
+            # Retry with download method
+            return convert_to_proper_CRS_and_cogify_improved_fixed(
+                name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix,
+                s3_client, COG_PROFILE, local_output_dir, new_config
+            )
+        else:
+            raise
 
     finally:
         gc.collect()
