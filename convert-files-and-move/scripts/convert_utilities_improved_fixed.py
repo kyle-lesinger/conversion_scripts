@@ -443,6 +443,7 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
         if chunk_config.get('use_streaming', True) and setup_gdal_vsi_credentials(s3_client):
             input_path = f"/vsis3/{BUCKET}/{name}"
             print(f"   [STREAM] Attempting to stream from S3: {input_path}")
+            print(f"   [STREAM] Note: GDAL streaming can fail on large files - will auto-retry with download if needed")
 
             try:
                 with rasterio.open(input_path) as test_src:
@@ -681,8 +682,30 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
     except Exception as e:
         print(f"   [ERROR] Unexpected error: {e}")
 
-        # Check if it's a streaming failure and we should retry with download
-        if "S3 streaming failed" in str(e) and chunk_config.get('use_streaming', True):
+        # Check for GDAL "Chunk and warp failed" error - common with S3 streaming
+        error_msg = str(e).lower()
+        if ("chunk and warp" in error_msg or "chunk_and_warp" in error_msg) and chunk_config.get('use_streaming', True):
+            print(f"   [GDAL ERROR] Detected 'Chunk and warp failed' - likely S3 streaming issue")
+            print(f"   [RETRY] Switching to file download method...")
+
+            # Update config to disable streaming
+            new_config = chunk_config.copy()
+            new_config['use_streaming'] = False
+
+            # Clean up any partial files
+            if 'reproject_filename' in locals() and os.path.exists(reproject_filename):
+                os.remove(reproject_filename)
+                print(f"   [CLEANUP] Removed partial reprojection file")
+
+            # Retry with download method
+            print(f"   [RETRY] Retrying with local file download to avoid streaming issues...")
+            return convert_to_proper_CRS_and_cogify_improved_fixed(
+                name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix,
+                s3_client, COG_PROFILE, local_output_dir, new_config
+            )
+
+        # Check if it's our custom S3 streaming failure message
+        elif "S3 streaming failed" in str(e) and chunk_config.get('use_streaming', True):
             print(f"   [RETRY] S3 streaming failed, retrying with file download...")
 
             # Update config to disable streaming
