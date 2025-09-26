@@ -311,6 +311,11 @@ def process_with_fixed_chunks(src, dst, src_crs, dst_crs, transform, width, heig
                                 print(f"   [CHUNK ERROR] Window size: {sub_win_width}x{sub_win_height}")
                                 print(f"   [CHUNK ERROR] Error: {str(reproject_error)}")
 
+                                # If we're streaming and getting chunk errors, switch to download
+                                if "chunk and warp" in str(reproject_error).lower() and "/vsis3/" in str(getattr(src, 'name', '')):
+                                    print(f"   [CHUNK ERROR] Streaming error detected - need to switch to download mode")
+                                    raise Exception("STREAMING_CHUNK_ERROR: Need to retry with download")
+
                                 # Try to recover by filling with nodata
                                 print(f"   [CHUNK RECOVERY] Filling failed chunk with nodata value")
                                 chunk_data.fill(src_nodata if src_nodata is not None else 0)
@@ -356,9 +361,14 @@ def process_with_fixed_chunks(src, dst, src_crs, dst_crs, transform, width, heig
                         print(f"   [CHUNK ERROR] Error message: {str(reproject_error)}")
 
                         # Check if it's a streaming issue
-                        if "curl" in str(reproject_error).lower() or "vsi" in str(reproject_error).lower():
-                            print(f"   [CHUNK ERROR] Appears to be S3 streaming issue")
-                            raise Exception("S3 streaming failed - need to retry with download")
+                        if ("curl" in str(reproject_error).lower() or
+                            "vsi" in str(reproject_error).lower() or
+                            "chunk and warp" in str(reproject_error).lower()):
+
+                            # Check if we're actually streaming
+                            if "/vsis3/" in str(getattr(src, 'name', '')):
+                                print(f"   [CHUNK ERROR] S3 streaming error detected")
+                                raise Exception("STREAMING_CHUNK_ERROR: Need to retry with download")
 
                         # Try to recover by filling with nodata
                         print(f"   [CHUNK RECOVERY] Attempting recovery by filling with nodata")
@@ -682,9 +692,31 @@ def convert_to_proper_CRS_and_cogify_improved_fixed(
     except Exception as e:
         print(f"   [ERROR] Unexpected error: {e}")
 
+        # Check for streaming chunk errors - we raise this when chunks fail during streaming
+        error_msg = str(e)
+        if "STREAMING_CHUNK_ERROR" in error_msg and chunk_config.get('use_streaming', True):
+            print(f"   [STREAMING ERROR] Chunk failures detected during S3 streaming")
+            print(f"   [RETRY] Switching to file download to avoid streaming issues...")
+
+            # Update config to disable streaming
+            new_config = chunk_config.copy()
+            new_config['use_streaming'] = False
+
+            # Clean up any partial files
+            if 'reproject_filename' in locals() and os.path.exists(reproject_filename):
+                os.remove(reproject_filename)
+                print(f"   [CLEANUP] Removed partial reprojection file")
+
+            # Retry with download method
+            print(f"   [DOWNLOAD] Downloading file locally for reliable processing...")
+            return convert_to_proper_CRS_and_cogify_improved_fixed(
+                name, BUCKET, cog_filename, cog_data_bucket, cog_data_prefix,
+                s3_client, COG_PROFILE, local_output_dir, new_config
+            )
+
         # Check for GDAL "Chunk and warp failed" error - common with S3 streaming
-        error_msg = str(e).lower()
-        if ("chunk and warp" in error_msg or "chunk_and_warp" in error_msg) and chunk_config.get('use_streaming', True):
+        error_msg_lower = str(e).lower()
+        if ("chunk and warp" in error_msg_lower or "chunk_and_warp" in error_msg_lower) and chunk_config.get('use_streaming', True):
             print(f"   [GDAL ERROR] Detected 'Chunk and warp failed' - likely S3 streaming issue")
             print(f"   [RETRY] Switching to file download method...")
 
