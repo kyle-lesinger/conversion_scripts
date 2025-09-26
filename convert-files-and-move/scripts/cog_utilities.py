@@ -288,7 +288,7 @@ def validate_cog(filepath: str) -> Tuple[bool, Dict]:
                 # Check compression
                 compression = src.profile.get('compress', None)
                 validation_details['compression'] = compression
-                if compression not in ['DEFLATE', 'LZW', 'ZSTD', 'WEBP', 'JPEG']:
+                if compression.upper() not in ['DEFLATE', 'LZW', 'ZSTD', 'WEBP', 'JPEG']:
                     validation_details['errors'].append(f"Compression '{compression}' may not be optimal for COG")
                 
                 # Check if file structure is cloud optimized
