@@ -751,25 +751,25 @@ def convert_to_proper_CRS_and_cogify_chunked(name, BUCKET, cog_filename, cog_dat
             # Clean up temporary GeoTIFF
             if os.path.exists(temp_tiff_name):
                 os.remove(temp_tiff_name)
-
-            # Validate COG
-            validate_COG(tmp_name)
-
-            # Upload to S3
-            print(f"   [UPLOAD] Uploading to S3...")
-            s3_client.upload_file(
-                Filename=tmp_name,
-                Bucket=cog_data_bucket,
-                Key=s3_key
-            )
-            print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
-
-            # Save locally if specified
-            if local_output_dir:
-                os.makedirs(local_output_dir, exist_ok=True)
-                local_path = os.path.join(local_output_dir, cog_filename)
-                import shutil
-                shutil.copy(tmp_name, local_path)
+                
+                # Validate COG
+                validate_COG(tmp_name)
+                
+                # Upload to S3
+                print(f"   [UPLOAD] Uploading to S3...")
+                s3_client.upload_file(
+                    Filename=tmp_name,
+                    Bucket=cog_data_bucket,
+                    Key=s3_key
+                )
+                print(f"   [SUCCESS] ✅ Uploaded to s3://{cog_data_bucket}/{s3_key}")
+                
+                # Save locally if specified
+                if local_output_dir:
+                    os.makedirs(local_output_dir, exist_ok=True)
+                    local_path = os.path.join(local_output_dir, cog_filename)
+                    import shutil
+                    shutil.copy(tmp_name, local_path)
         
         # Final memory report
         if chunk_config.get('enable_memory_monitoring', True):
