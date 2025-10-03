@@ -11,7 +11,9 @@ This module provides functions for:
 import boto3
 import fsspec
 from botocore.exceptions import NoCredentialsError, ClientError
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
+import pandas as pd
+import sys
 
 
 def initialize_s3_client(bucket_name: str = 'nasa-disasters', verbose: bool = True) -> Tuple[Optional[boto3.client], Optional[fsspec.AbstractFileSystem]]:
@@ -167,6 +169,91 @@ def test_s3_access(bucket_name: str = 'nasa-disasters') -> bool:
         return True
     except Exception:
         return False
+
+
+class s3_count_manager():
+    def __init__(self, csv : str = ""):
+        if csv == "":
+            self.current = self.get_current_counts()
+        else:
+            self.current = pd.read_csv(csv)
+        self.old = None
+
+    def get_satellites(self, file_list : list[str]) -> list[str]:
+        satellites = []
+        for key in file_list:
+            skey = key.split("/")
+            if skey[1] not in satellites:
+                satellites.append(skey[1])
+        return satellites
+
+    def count_dict(self) -> dict:
+        prefix = "drcs_activations_new"
+        
+        # Load s3 client and pull all files
+        s3_client, fs_read = initialize_s3_client(bucket_name='nasa-disasters', verbose=False)
+        verify_s3_client(s3_client, bucket_name='nasa-disasters', verbose=False)
+        file_list = get_all_s3_keys(s3_client, 'nasa-disasters', prefix, ".tif") if s3_client else []
+    
+        if not file_list:
+            sys.exit("ERROR: S3 Client not initialized properly.")
+        
+        satellites = self.get_satellites(file_list)
+        sat_dict = {}
+        for sat in satellites:
+            subdaily = 0
+            day = 0
+            month = 0
+            partial = {}
+            for key in file_list:
+                if key.startswith(f"{prefix}/{sat}/"):
+                    skey = key.split("/")
+                    if skey[-1].replace(".tif", "").endswith("_day"):
+                        day += 1
+                    elif skey[-1].replace(".tif", "").endswith("_monthly"):
+                        month += 1
+                    elif skey[-1].replace(".tif", "").endswith("Z"):
+                        subdaily += 1
+    
+            if subdaily != 0:
+                partial["subdaily"] = subdaily
+            if day != 0:
+                partial["day"] = day
+            if month != 0:
+                partial["monthly"] = month
+            sat_dict[sat] = partial
+        return sat_dict
+
+    def get_current_counts(self) -> pd.DataFrame:
+        dataframe = pd.DataFrame(columns=["satellite", "temporal_resolution", "count"])
+
+        data = self.count_dict()
+        for k, v in data.items():
+            for i, j in v.items():
+                dataframe.loc[len(dataframe)] = [k, i, j]
+                
+        return dataframe
+
+
+    def reevaluate(self) -> list:
+        self.old = self.current
+        self.current = self.get_current_counts()
+
+        diff = self.old.compare(self.current, result_names = ("old", "new"))
+
+        named_diff = pd.DataFrame(columns=["satellite", "temporal_resolution", "old_count", "new_count", "difference"])
+        for i, row in diff.iterrows():
+            named_diff.loc[i] = [self.current.loc[i, "satellite"], self.current.loc[i, "temporal_resolution"], row["count"]["old"], row["count"]["new"], row["count"]["new"] - row["count"]["old"]]
+        return named_diff
+
+    def to_csv(self, filename : str = "drcs_activations_new_current_filecounts.csv"):
+        self.current.to_csv(filename, index = False)
+
+    def row_index_by_product(self, satellite, temporal_resolution) -> Union[int, None]:
+        for i, row in self.current.iterrows():
+            if (row["satellite"] == satellite) and (row["temporal_resolution"] == temporal_resolution):
+                return i
+        return None
 
 
 if __name__ == "__main__":
