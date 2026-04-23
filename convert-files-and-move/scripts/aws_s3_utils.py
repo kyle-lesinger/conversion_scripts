@@ -239,18 +239,35 @@ class s3_count_manager():
         self.old = self.current
         self.current = self.get_current_counts()
 
-        diff = self.old.compare(self.current, result_names = ("old", "new"))
+        current_in_old = [index for index, row in self.current.iterrows() if (self.row_index_by_product(row["satellite"], row["temporal_resolution"], which = self.old) is not None)]
+        added_rows = [index for index, row in self.current.iterrows() if index not in current_in_old]
+
+        old_in_current = [index for index, row in self.old.iterrows() if (self.row_index_by_product(row["satellite"], row["temporal_resolution"], which = self.current) is not None)]
+        removed_rows = [index for index, row in self.old.iterrows() if index not in old_in_current]
+
+        
+        diff = self.old.loc[old_in_current].compare(self.current.loc[current_in_old], result_names = ("old", "new"))
 
         named_diff = pd.DataFrame(columns=["satellite", "temporal_resolution", "old_count", "new_count", "difference"])
         for i, row in diff.iterrows():
-            named_diff.loc[i] = [self.current.loc[i, "satellite"], self.current.loc[i, "temporal_resolution"], row["count"]["old"], row["count"]["new"], row["count"]["new"] - row["count"]["old"]]
+            named_diff.loc[len(named_diff)] = [self.current.loc[i, "satellite"], self.current.loc[i, "temporal_resolution"], row["count"]["old"], row["count"]["new"], row["count"]["new"] - row["count"]["old"]]
+
+        for i in added_rows:
+            named_diff.loc[len(named_diff)] = [self.current.loc[i, "satellite"], self.current.loc[i, "temporal_resolution"], 0, self.current.loc[i, "count"], self.current.loc[i, "count"] - 0]
+            
+        for i in removed_rows:
+            named_diff.loc[len(named_diff)] = [self.old.loc[i, "satellite"], self.old.loc[i, "temporal_resolution"], self.old.loc[i, "count"], 0, 0 - self.old.loc[i, "count"]]
         return named_diff
 
     def to_csv(self, filename : str = "drcs_activations_new_current_filecounts.csv"):
         self.current.to_csv(filename, index = False)
 
-    def row_index_by_product(self, satellite, temporal_resolution) -> Union[int, None]:
-        for i, row in self.current.iterrows():
+    def row_index_by_product(self, satellite : str, temporal_resolution : str, **kwargs) -> Union[int, None]:
+        if "which" in kwargs.keys():
+            which = kwargs["which"]
+        else:
+            which = self.current
+        for i, row in which.iterrows():
             if (row["satellite"] == satellite) and (row["temporal_resolution"] == temporal_resolution):
                 return i
         return None
